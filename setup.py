@@ -19,5 +19,5 @@ setup(
     package_data={'': ['*.csv', '*.yml', '*.html']},
     include_package_data=True,
     install_requires=requires,
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     zip_safe=False, )
