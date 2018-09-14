@@ -2,7 +2,7 @@ from . import __version__
 from intake.source.base import DataSource, Schema
 
 import iris
-from iris.cube import Cube, CubeList
+from iris.cube import CubeList
 
 
 class DataSourceMixin(DataSource):

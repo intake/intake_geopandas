@@ -17,6 +17,3 @@ def test_discover(source, cdf_source, dataset):
 
     assert r['datashape'] is None
     assert r['dtype'] is None
-    assert r['metadata'] is not None
-
-    assert source.datashape is None
