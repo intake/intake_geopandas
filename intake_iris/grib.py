@@ -2,7 +2,7 @@
 from .base import DataSourceMixin
 
 
-class NetCDFSource(DataSourceMixin):
+class GRIBSource(DataSourceMixin):
     """Open a netCDF file with iris.
 
     Parameters
@@ -11,11 +11,11 @@ class NetCDFSource(DataSourceMixin):
         Path to source file. May include glob "*" characters. Must be a
         location in the local file-system or opendap url.
     """
-    name = 'netcdf'
+    name = 'grib'
 
     def __init__(self, urlpath, iris_kwargs=None, metadata=None,
                  **kwargs):
         self.urlpath = urlpath
         self._kwargs = iris_kwargs or kwargs
         self._ds = None
-        super(NetCDFSource, self).__init__(metadata=metadata)
+        super(GRIBSource, self).__init__(metadata=metadata)

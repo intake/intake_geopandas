@@ -1,6 +1,7 @@
 from . import __version__
 from intake.source.base import DataSource, Schema
 
+import iris
 from iris.cube import Cube, CubeList
 
 
@@ -9,6 +10,9 @@ class DataSourceMixin(DataSource):
     version = __version__
     container = 'iris'
     partition_access = True
+
+    def _open_dataset(self):
+        self._ds = iris.load(self.urlpath, **self._kwargs)
 
     def _get_schema(self):
         """Make schema object, which embeds iris object and some details"""
