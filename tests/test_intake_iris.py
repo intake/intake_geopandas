@@ -10,9 +10,9 @@ here = os.path.dirname(__file__)
 from .util import TEST_URLPATH, cdf_source, dataset  # noqa
 
 
-@pytest.mark.parametrize('source', ['cdf', 'zarr'])
+@pytest.mark.parametrize('source', ['cdf'])
 def test_discover(source, cdf_source, zarr_source, dataset):
-    source = {'cdf': cdf_source, 'zarr': zarr_source}[source]
+    source = {'cdf': cdf_source}[source]
     r = source.discover()
 
     assert r['datashape'] is None
@@ -25,9 +25,9 @@ def test_discover(source, cdf_source, zarr_source, dataset):
     assert set(source.metadata['coords']) == set(dataset.coords.keys())
 
 
-@pytest.mark.parametrize('source', ['cdf', 'zarr'])
+@pytest.mark.parametrize('source', ['cdf'])
 def test_read(source, cdf_source, zarr_source, dataset):
-    source = {'cdf': cdf_source, 'zarr': zarr_source}[source]
+    source = {'cdf': cdf_source}[source]
 
     ds = source.read_chunked()
     assert ds.temp.chunks
@@ -48,9 +48,9 @@ def test_read_partition_cdf(cdf_source):
     assert np.all(out == expected)
 
 
-@pytest.mark.parametrize('source', ['cdf', 'zarr'])
+@pytest.mark.parametrize('source', ['cdf'])
 def test_to_dask(source, cdf_source, zarr_source, dataset):
-    source = {'cdf': cdf_source, 'zarr': zarr_source}[source]
+    source = {'cdf': cdf_source}[source]
     ds = source.to_dask()
 
     assert ds.dims == dataset.dims
