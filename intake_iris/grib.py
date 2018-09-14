@@ -13,9 +13,10 @@ class GRIBSource(DataSourceMixin):
     """
     name = 'grib'
 
-    def __init__(self, urlpath, iris_kwargs=None, metadata=None,
+    def __init__(self, urlpath, warnings='default', iris_kwargs=None, metadata=None,
                  **kwargs):
         self.urlpath = urlpath
+        self.warnings = warnings
         self._kwargs = iris_kwargs or kwargs
         self._ds = None
         super(GRIBSource, self).__init__(metadata=metadata)
