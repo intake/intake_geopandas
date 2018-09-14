@@ -1,40 +1,35 @@
 Quickstart
 ==========
 
-``intake-xarray`` provides quick and easy access to stored in xarray files.
+``intake-iris`` provides quick and easy access to stored in iris files.
 
-.. _xarray: https://xarray.pydata.org
+.. iris: https://scitools.org.uk/iris/docs/latest/
 
 Installation
 ------------
 
 To use this plugin for `intake`_, install with the following command::
 
-   conda install -c intake intake-xarray
+   conda install -c informaticslab intake-iris
 
 .. _intake: https://github.com/ContinuumIO/intake
 
 Usage
 -----
 
-Note that xarray sources do not yet support streaming from an Intake server.
+Note that iris sources do not yet support streaming from an Intake server.
 
 Ad-hoc
 ~~~~~~
 
-After installation, the functions ``intake.open_netcdf``, ``intake.open_rasterio`` and ``intake.open_zarr``
-will become available. They can be used to open xarray
-datasets.
+After installation, the functions ``intake.open_netcdf`` and ``intake.open_grib``
+will become available. They can be used to open iris datasets.
 
 Creating Catalog Entries
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Catalog entries must specify ``driver: netcdf``, ``driver: rasterio`` or ``driver: zarr``,
+Catalog entries must specify ``driver: netcdf`` or ``driver: grib``,
 as appropriate.
-
-
-The zarr-based plugin allows access to remote data stores (s3 and gcs), settings
-relevant to those should be passed in using the parameter ``storage_options``.
 
 
 Using a Catalog

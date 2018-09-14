@@ -2,15 +2,11 @@ API Reference
 =============
 
 .. autosummary::
-   intake_xarray.netcdf.NetCDFSource
-   intake_xarray.xzarr.ZarrSource
-   intake_xarray.raster.RasterIOSource
+   intake_iris.netcdf.NetCDFSource
+   intake_iris.xzarr.GRIBSource
 
-.. autoclass:: intake_xarray.netcdf.NetCDFSource
+.. autoclass:: intake_iris.netcdf.NetCDFSource
    :members:
 
-.. autoclass:: intake_xarray.xzarr.ZarrSource
-   :members:
-
-.. autoclass:: intake_xarray.raster.RasterIOSource
+.. autoclass:: intake_iris.xzarr.GRIBSource
    :members:

@@ -1,7 +1,7 @@
-Welcome to intake_xarray's documentation!
+Welcome to intake_iris's documentation!
 ================================================
 
-This package enables the set of data-loading methods from Xarray to be used within the Intake
+This package enables the set of data-loading methods from Iris to be used within the Intake
 data access and cataloging system.
 
 .. toctree::

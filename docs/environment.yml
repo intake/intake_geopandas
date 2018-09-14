@@ -1,11 +1,12 @@
-name: intake
+name: intake-iris
 channels:
   - intake
+  - informaticslab
   - defaults
 dependencies:
   - python=3.6
   - intake
-  - intake-xarray
+  - intake-iris
   - pip:
     - sphinx
     - sphinx-rtd-theme
