@@ -4,10 +4,9 @@ import os
 import pytest
 import shutil
 import tempfile
-import xarray as xr
+import iris
 
-from intake_xarray.netcdf import NetCDFSource
-from intake_xarray.xzarr import ZarrSource
+from intake_iris.netcdf import NetCDFSource
 
 TEST_DATA_DIR = 'tests/data'
 TEST_DATA = 'example_1.nc'
@@ -21,16 +20,4 @@ def cdf_source():
 
 @pytest.fixture
 def dataset():
-    return xr.open_dataset(TEST_URLPATH)
-
-
-@pytest.fixture(scope='module')
-def zarr_source():
-    pytest.importorskip('zarr')
-    try:
-        tdir = tempfile.mkdtemp()
-        data = xr.open_dataset(TEST_URLPATH)
-        data.to_zarr(tdir)
-        yield ZarrSource(tdir)
-    finally:
-        shutil.rmtree(tdir)
+    return iris.load(TEST_URLPATH)

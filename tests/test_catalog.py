@@ -14,7 +14,7 @@ def catalog1():
 
 
 def test_catalog(catalog1, dataset):
-    source = catalog1['xarray_source'].get()
+    source = catalog1['iris_source'].get()
     ds = source.read()
 
     assert ds.dims == dataset.dims

@@ -3,5 +3,5 @@ dask
 requests
 pandas
 scipy
-xarray
+iris
 pytest

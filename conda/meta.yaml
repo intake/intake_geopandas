@@ -1,5 +1,5 @@
 package:
-   name: intake-xarray
+   name: intake-iris
    version: {{ GIT_DESCRIBE_TAG }}
 
 source:
@@ -20,8 +20,7 @@ requirements:
     - intake>=0.2
     - python
     - scipy
-    - xarray
-    - zarr
+    - iris
 
 test:
   source_files:
@@ -32,8 +31,8 @@ test:
     - py.test --verbose
 
 about:
-  home: https://github.com/ContinuumIO/intake-xarray
+  home: https://github.com/informaticslab/intake-iris
   license: BSD
   license_file: LICENSE
   summary: |
-    xarray plugins for Intake
+    iris plugins for Intake

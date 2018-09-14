@@ -2,10 +2,10 @@ plugins:
   source:
     - module: intake_xarray
 sources:
-  xarray_source:
+  iris_source:
     description: example xarray source plugin
     driver: netcdf
-    args: 
+    args:
       urlpath: '{{ CATALOG_DIR }}/example_1.nc'
       chunks: {}
   grib:
@@ -17,22 +17,6 @@ sources:
       chunks:
         lv_ISBL0: 2
       concat_dim: fileno
-  tiff_source:
-    description: "https://github.com/mapbox/rasterio/blob/master/tests/data/RGB.byte.tif"
-    driver: rasterio
-    args:
-      urlpath: '{{ CATALOG_DIR }}/RGB.byte.tif'
-      chunks:
-        band: 1
-      concat_dim: concat_dim
-  tiff_glob_source:
-    description: "https://github.com/mapbox/rasterio/blob/master/tests/data/RGB.byte.tif"
-    driver: rasterio
-    args:
-      urlpath: '{{ CATALOG_DIR }}/*.tif'
-      chunks:
-        band: 1
-      concat_dim: concat_dim
   empty_glob:
     description: Empty
     driver: rasterio
