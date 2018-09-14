@@ -15,5 +15,5 @@ In `intake-iris`, there are plugins provided for reading data into iris with.
 The conda install instructions are:
 
 ```
-conda install -c informaticslab intake_iris
+conda install -c informaticslab intake-iris
 ```
