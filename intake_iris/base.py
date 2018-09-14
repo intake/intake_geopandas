@@ -16,7 +16,7 @@ class DataSourceMixin(DataSource):
     def _open_dataset(self):
         with warnings.catch_warnings():
             warnings.simplefilter(self.warnings)
-            self._ds = iris.load(self.urlpath, **self._kwargs)
+            self._ds = iris.load(self.urlpath, **self._kwargs).concatenate()
 
     def _get_schema(self):
         """Make schema object, which embeds iris object and some details"""
