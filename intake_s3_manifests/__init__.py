@@ -59,7 +59,6 @@ class S3ManifestSource(CSVSource):
         self._s3_manifest_kwargs = s3_manifest_kwargs or {}
         self._dataframe = None
 
-
     def _open_dataset(self):
 
         with open(self._urlpath) as f:
@@ -73,3 +72,6 @@ class S3ManifestSource(CSVSource):
                 df = dd.concat([df, metadata], axis=1, sort=False)
 
         self._dataframe = df
+
+    def _get_partition(self, i):
+        return super(S3ManifestSource, self)._get_partition(i)
