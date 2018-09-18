@@ -69,7 +69,7 @@ class S3ManifestSource(DataSource):
             manifest_meta = json.load(f)
             manifests = [file['key'] for file in manifest_meta['files']]
 
-            df = dd.concat([dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest), names=['Bucket', 'Key', 'Size', 'Created'], encoding = "ISO-8859-1", engine='c') for manifest in manifests])
+            df = dd.concat([dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest), names=['Bucket', 'Key', 'Size', 'Created'], encoding = "ISO-8859-1", engine='c', lineterminator='\n') for manifest in manifests])
             df = df[~df['Key'].str.contains("/{source_bucket}/{config_id}/".format(source_bucket=self._source_bucket, config_id=self._config_id))]
             if self._extract_key_regex is not None:
                 metadata = df.Key.str.extract(self._extract_key_regex, expand=False)
