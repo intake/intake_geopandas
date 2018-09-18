@@ -13,13 +13,18 @@ class S3ManifestSource(DataSource):
     container = 'dataframe'
     partition_access = True
 
-    def __init__(self, bucket, manifest_date='latest', s3_prefix='s3://', s3_manifest_kwargs=None, metadata=None,
+    def __init__(self, manifest_bucket, source_bucket, config_id, manifest_date='latest', s3_prefix='s3://', s3_manifest_kwargs=None, metadata=None,
                  extract_key_regex=None, storage_options=None):
         """
         Parameters
         ----------
-        bucket : str
-            The S3 bucket to for which you want to load the manifest.
+        manifest_bucket : str
+            The S3 bucket which contains the manifest files.
+        source_bucket : str
+            The S3 bucket for which you want to load the manifest.
+        config_id : str
+            The S3 inventory config ID.
+            See https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html#storage-inventory-location
         manifest_date: str
             The date of the manifest you wish to load in for format `YYYY-MM-DD`. Defaults to `latest` which will
             load the most recent manifest.
@@ -41,14 +46,19 @@ class S3ManifestSource(DataSource):
             Any parameters that need to be passed to the remote data backend,
             such as credentials.
         """
-        self._bucket = bucket
+        self._manifest_bucket = manifest_bucket
+        self._source_bucket = source_bucket
         self._manifest_date = manifest_date
+        self._config_id = config_id
         if self._manifest_date == 'latest':
             self._manifest_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         self._s3_prefix = s3_prefix
-        self._urlpath = '{prefix}{bucket}/manifest/{date}/manifest.json'.format(prefix=self._s3_prefix,
-                                                                                bucket=self._bucket,
-                                                                                date=self._manifest_date)
+        self._urlpath = '{prefix}{manifest_bucket}/{source_bucket}/{config_id}/{date}/manifest.json'.format(
+            prefix=self._s3_prefix,
+            manifest_bucket=self._manifest_bucket,
+            source_bucket=self._source_bucket,
+            config_id=self._config_id,
+            date=self._manifest_date)
         self._extract_key_regex = r'%s' % extract_key_regex
         self._storage_options = storage_options
         self._s3_manifest_kwargs = s3_manifest_kwargs or {}
@@ -60,7 +70,7 @@ class S3ManifestSource(DataSource):
             manifests = [file['key'] for file in manifest_meta['files']]
 
             df = dd.concat([dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest), names=['Bucket', 'Key', 'Size', 'Created']) for manifest in manifests])
-            df = df[~df['Key'].str.contains("manifest/")]
+            df = df[~df['Key'].str.contains("/{source_bucket}/{config_id}/".format(source_bucket=self._source_bucket, config_id=self._config_id))]
             if self._extract_key_regex is not None:
                 metadata = df.Key.str.extract(self._extract_key_regex, expand=False)
                 df = dd.concat([df, metadata], axis=1, sort=False)
