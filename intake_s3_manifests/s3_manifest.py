@@ -75,7 +75,7 @@ class S3ManifestSource(DataSource):
             df = df[~df['Key'].str.contains("/{source_bucket}/{config_id}/".format(source_bucket=self._source_bucket, config_id=self._config_id))]
             if self._extract_key_regex is not None:
                 metadata = df.Key.str.extract(self._extract_key_regex, expand=False)
-                df = dd.concat([df, metadata], axis=1, sort=False)
+                df = dd.concat([df, metadata], axis=1)
 
         self._dataframe = df
 
