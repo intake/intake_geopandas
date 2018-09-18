@@ -6,7 +6,7 @@ import versioneer
 requires = open('requirements.txt').read().strip().split('\n')
 
 setup(
-    name='intake-s3-manifests',
+    name='intake_s3_manifests',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description='S3 manifests plugin for Intake',

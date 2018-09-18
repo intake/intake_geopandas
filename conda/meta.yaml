@@ -1,5 +1,5 @@
 package:
-   name: intake-s3-manifests
+   name: intake_s3_manifests
    version: {{ GIT_DESCRIBE_TAG }}
 
 source:
