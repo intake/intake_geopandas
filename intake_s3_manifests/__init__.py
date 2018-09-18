@@ -12,10 +12,10 @@ from intake.source.base import Schema, DataSource
 
 class S3ManifestSource(DataSource):
     """Common behaviours for plugins in this repo"""
+    name = 's3-manifest'
     version = __version__
     container = 'dataframe'
     partition_access = True
-    name = 's3-manifest'
 
     def __init__(self, bucket, manifest_date='latest', s3_prefix='s3://', s3_manifest_kwargs=None, metadata=None,
                  extract_key_regex=None, storage_options=None):
