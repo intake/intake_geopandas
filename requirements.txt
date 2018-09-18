@@ -3,5 +3,4 @@ dask
 requests
 pandas
 scipy
-iris
 pytest

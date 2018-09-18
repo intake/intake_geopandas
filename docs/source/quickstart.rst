@@ -1,35 +1,34 @@
 Quickstart
 ==========
 
-``intake-iris`` provides quick and easy access to stored in iris files.
+``intake-s3-manifests`` provides quick and easy access to data stored S3 inventory manifests.
 
-.. iris: https://scitools.org.uk/iris/docs/latest/
+.. S3 inventory manifests: https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html#storage-inventory-location-manifest
 
 Installation
 ------------
 
 To use this plugin for `intake`_, install with the following command::
 
-   conda install -c informaticslab intake-iris
+   conda install -c informaticslab intake-s3-manifests
 
 .. _intake: https://github.com/ContinuumIO/intake
 
 Usage
 -----
 
-Note that iris sources do not yet support streaming from an Intake server.
+Note that S3 inventory manifests sources do not yet support streaming from an Intake server.
 
 Ad-hoc
 ~~~~~~
 
-After installation, the functions ``intake.open_netcdf`` and ``intake.open_grib``
-will become available. They can be used to open iris datasets.
+After installation, the function ``intake.open_s3_manifest``
+will become available. They can be used to open S3 inventory manifests datasets.
 
 Creating Catalog Entries
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Catalog entries must specify ``driver: netcdf`` or ``driver: grib``,
-as appropriate.
+Catalog entries must specify ``driver: s3-manifest``.
 
 
 Using a Catalog

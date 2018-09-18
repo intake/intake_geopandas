@@ -1,4 +1,4 @@
-name: intake-iris
+name: intake-s3-manifests
 channels:
   - intake
   - informaticslab
@@ -6,7 +6,7 @@ channels:
 dependencies:
   - python=3.6
   - intake
-  - intake-iris
+  - intake-s3-manifests
   - pip:
     - sphinx
     - sphinx-rtd-theme

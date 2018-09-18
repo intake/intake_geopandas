@@ -2,4 +2,4 @@ recursive-include . *.html
 recursive-include . *.csv
 recursive-include . *.yml
 include versioneer.py
-include intake_iris/_version.py
+include intake_s3_manifests/_version.py
