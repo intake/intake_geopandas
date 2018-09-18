@@ -74,7 +74,6 @@ class S3ManifestSource(DataSource):
             partitions = [dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest), names=['Bucket', 'Key', 'Size', 'Created'], compression='gzip', blocksize=None) for manifest in manifests]
             df = dd.concat(partitions)
             df = df[~df['Key'].str.contains("/{source_bucket}/{config_id}/".format(source_bucket=self._source_bucket, config_id=self._config_id))]
-            df = df.repartition(npartitions=len(partitions)).reset_index(drop=True)
             if self._extract_key_regex is not None:
                 metadata = df.Key.str.extract(self._extract_key_regex, expand=False)
                 df = dd.concat([df, metadata], axis=1)
