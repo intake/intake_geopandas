@@ -59,6 +59,7 @@ class S3ManifestSource(DataSource):
             source_bucket=self._source_bucket,
             config_id=self._config_id,
             date=self._manifest_date)
+        self._extract_key_regex = extract_key_regex
         if self._extract_key_regex is not None:
             self._extract_key_regex = r'%s' % extract_key_regex
         self._storage_options = storage_options
