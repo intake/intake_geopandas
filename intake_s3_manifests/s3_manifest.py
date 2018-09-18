@@ -85,11 +85,11 @@ class S3ManifestSource(DataSource):
 
         dtypes = self._dataframe._meta.dtypes.to_dict()
         dtypes = {n: str(t) for (n, t) in dtypes.items()}
-        return base.Schema(datashape=None,
-                           dtype=dtypes,
-                           shape=(None, len(dtypes)),
-                           npartitions=self._dataframe.npartitions,
-                           extra_metadata={})
+        return Schema(datashape=None,
+                      dtype=dtypes,
+                      shape=(None, len(dtypes)),
+                      npartitions=self._dataframe.npartitions,
+                      extra_metadata={})
 
     def _get_partition(self, i):
         self._get_schema()
