@@ -7,11 +7,10 @@ import dask.dataframe as dd
 from datetime import datetime, timedelta
 
 import intake.container
-from intake.source.base import Schema
-from intake.source.csv import CSVSource
+from intake.source.base import Schema, DataSource
 
 
-class S3ManifestSource(CSVSource):
+class S3ManifestSource(DataSource):
     """Common behaviours for plugins in this repo"""
     version = __version__
     container = 'dataframe'
@@ -60,7 +59,6 @@ class S3ManifestSource(CSVSource):
         self._dataframe = None
 
     def _open_dataset(self):
-
         with open(self._urlpath) as f:
             manifest_meta = json.load(f)
             manifests = [file['key'] for file in manifest_meta['files']]
@@ -73,6 +71,29 @@ class S3ManifestSource(CSVSource):
 
         self._dataframe = df
 
+    def _get_schema(self):
+        if self._dataframe is None:
+            self._open_dataset()
+
+        dtypes = self._dataframe._meta.dtypes.to_dict()
+        dtypes = {n: str(t) for (n, t) in dtypes.items()}
+        return base.Schema(datashape=None,
+                           dtype=dtypes,
+                           shape=(None, len(dtypes)),
+                           npartitions=self._dataframe.npartitions,
+                           extra_metadata={})
+
     def _get_partition(self, i):
         self._get_schema()
         return self._dataframe.get_partition(i).compute()
+
+    def read(self):
+        self._get_schema()
+        return self._dataframe.compute()
+
+    def to_dask(self):
+        self._get_schema()
+        return self._dataframe
+
+    def _close(self):
+        self._dataframe = None
