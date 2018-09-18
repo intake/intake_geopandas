@@ -74,4 +74,5 @@ class S3ManifestSource(CSVSource):
         self._dataframe = df
 
     def _get_partition(self, i):
-        return super(S3ManifestSource, self)._get_partition(i)
+        self._get_schema()
+        return self._dataframe.get_partition(i).compute()
