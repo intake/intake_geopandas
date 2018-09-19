@@ -16,11 +16,12 @@ requirements:
   build:
     - python
     - jinja2
+    - pandas
   run:
     - intake>=0.2
-    - python
-    - scipy
-    - iris
+    - dask
+    - boto3
+    - pandas
 
 test:
   source_files:

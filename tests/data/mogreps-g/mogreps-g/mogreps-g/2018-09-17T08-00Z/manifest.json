@@ -1,0 +1,17 @@
+{
+    "sourceBucket": "mogreps-g",
+    "destinationBucket": "arn:aws:s3:::mogreps-g",
+    "version": "2016-11-30",
+    "creationTimestamp": "1537171200000",
+    "fileFormat": "CSV",
+    "fileSchema": "Bucket, Key",
+    "files": [{
+        "key": "mogreps-g/mogreps-g/data/77f3eb26-28a6-4513-968b-ab32b20359ab.csv.gz",
+        "size": 786047,
+        "MD5checksum": "f96c92ab9797f4e476c3aad01b4107e3"
+    }, {
+        "key": "mogreps-g/mogreps-g/data/829de331-787e-467b-95d3-4b5071c3c0bb.csv.gz",
+        "size": 940004,
+        "MD5checksum": "a3c6bcd82b766e51841b2ab9946fe53e"
+    }]
+}

@@ -13,8 +13,8 @@ def catalog1():
     return open_catalog(os.path.join(path, 'data', 'catalog.yaml'))
 
 
-def test_catalog(catalog1, dataset):
-    source = catalog1['test_dataset'].get()
+def test_catalog(catalog1):
+    source = catalog1['mogreps_g_manifest'].get()
     ds = source.read()
 
     assert isinstance(ds, pd.DataFrame)
