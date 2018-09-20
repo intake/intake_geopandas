@@ -19,8 +19,8 @@ requirements:
     - pandas
   run:
     - intake>=0.2
+    - s3fs
     - dask
-    - boto3
     - pandas
 
 test:

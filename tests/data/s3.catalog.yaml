@@ -1,0 +1,14 @@
+plugins:
+  source:
+    - module: intake_s3_manifests
+sources:
+  mogreps_g_manifest:
+    description: The S3 manifests for mogreps-g.
+    driver: s3_manifest
+    args:
+      manifest_bucket: 'mogreps-g'
+      source_bucket: 'mogreps-g'
+      config_id: 'mogreps-g'
+      manifest_date: '2018-09-17T08-00Z'
+      s3_prefix: 's3://'
+      extract_key_regex: 'prods_op_(?P<Model>.*)_(?P<Date>.*)_(?P<Hour>..)_(?P<Member>..)_(?P<ForecastPeriod>...).nc'
