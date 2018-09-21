@@ -12,3 +12,4 @@ sources:
       manifest_date: '2018-09-17T08-00Z'
       s3_prefix: 's3://'
       extract_key_regex: 'prods_op_(?P<Model>.*)_(?P<Date>.*)_(?P<Hour>..)_(?P<Member>..)_(?P<ForecastPeriod>...).nc'
+      s3_anon: true
