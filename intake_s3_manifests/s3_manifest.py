@@ -74,7 +74,7 @@ class S3ManifestSource(DataSource):
             return fs.open(url, 'rb')
         else:
             # other :- use `open`
-            return open(url)
+            return open(url, 'rb')
 
     def _open_dataset(self):
 
