@@ -5,6 +5,8 @@ from intake.source.base import DataSource, Schema
 import json
 import dask.dataframe as dd
 from datetime import datetime, timedelta
+import s3fs
+
 
 class S3ManifestSource(DataSource):
     """Common behaviours for plugins in this repo"""
@@ -13,8 +15,8 @@ class S3ManifestSource(DataSource):
     container = 'dataframe'
     partition_access = True
 
-    def __init__(self, manifest_bucket, source_bucket, config_id, manifest_date='latest', s3_prefix='s3://', s3_manifest_kwargs=None, metadata=None,
-                 extract_key_regex=None, storage_options=None):
+    def __init__(self, manifest_bucket, source_bucket, config_id, manifest_date='latest', s3_prefix='s3://', s3_manifest_kwargs=None,
+                 extract_key_regex=None, s3_anon=True, metadata=None):
         """
         Parameters
         ----------
@@ -42,14 +44,14 @@ class S3ManifestSource(DataSource):
             e.g if your bucket contains images from an ecommerce website they may follow the format
             `<category>_<item name>_<item_id>.jpg` which you could extract using the expression
             `(?P<Category>.*)_(?P<Name>.*)_(?P<ID>..).jpg`.
-        storage_options : dict
-            Any parameters that need to be passed to the remote data backend,
-            such as credentials.
+        s3_anon: bool
+            When reading manifests from S3 (s3_prefix = "s3://") then do so with out sending credentials. Default is True.
         """
         self._manifest_bucket = manifest_bucket
         self._source_bucket = source_bucket
         self._manifest_date = manifest_date
         self._config_id = config_id
+        self._s3_anon = s3_anon
         if self._manifest_date == 'latest':
             self._manifest_date = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
         self._s3_prefix = s3_prefix
@@ -62,16 +64,26 @@ class S3ManifestSource(DataSource):
         self._extract_key_regex = extract_key_regex
         if self._extract_key_regex is not None:
             self._extract_key_regex = r'%s' % extract_key_regex
-        self._storage_options = storage_options
         self._s3_manifest_kwargs = s3_manifest_kwargs or {}
         self._dataframe = None
 
+    def _open_manifest(self, url):
+        if self._s3_prefix.split('/')[0] == 's3:':
+            # s3 :- use `s3fs`
+            fs = s3fs.S3FileSystem(anon=self._s3_anon)
+            return fs.open(url, 'rb')
+        else:
+            # other :- use `open`
+            return open(url, 'rb')
+
     def _open_dataset(self):
-        with open(self._urlpath) as f:
+
+        with self._open_manifest(self._urlpath) as f:
             manifest_meta = json.load(f)
             manifests = [file['key'] for file in manifest_meta['files']]
 
-            partitions = [dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest), names=['Bucket', 'Key', 'Size', 'Created'], compression='gzip', blocksize=None) for manifest in manifests]
+            partitions = [dd.read_csv('{prefix}{bucket}/{key}'.format(prefix=self._s3_prefix, bucket=manifest_meta['sourceBucket'], key=manifest),
+                                      names=['Bucket', 'Key', 'Size', 'Created'], compression='gzip', blocksize=None) for manifest in manifests]
             df = dd.concat(partitions)
             df = df[~df['Key'].str.contains("/{source_bucket}/{config_id}/".format(source_bucket=self._source_bucket, config_id=self._config_id))]
             if self._extract_key_regex is not None:
