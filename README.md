@@ -14,5 +14,5 @@ In `intake-s3-manifests`, there are plugins provided for reading manifests into 
 The conda install instructions are:
 
 ```
-conda install -c informaticslab intake-s3-manifests
+conda install -c informaticslab -c intake intake-s3-manifests
 ```
