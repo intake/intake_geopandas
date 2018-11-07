@@ -53,7 +53,7 @@ class ShapeSource(DataSource):
         return Schema(datashape=None,
                       dtype=dtypes,
                       shape=(None, len(dtypes)),
-                      npartitions=self._dataframe.npartitions,
+                      npartitions=1,
                       extra_metadata={})
 
     def _get_partition(self, i):
