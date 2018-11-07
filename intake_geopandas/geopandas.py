@@ -48,7 +48,7 @@ class ShapeSource(DataSource):
         if self._dataframe is None:
             self._open_dataset(self.urlpath)
 
-        dtypes = self._dataframe._meta.dtypes.to_dict()
+        dtypes = self._dataframe.dtypes.to_dict()
         dtypes = {n: str(t) for (n, t) in dtypes.items()}
         return Schema(datashape=None,
                       dtype=dtypes,
