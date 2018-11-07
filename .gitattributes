@@ -1,1 +1,1 @@
-intake_s3_manifests/_version.py export-subst
+intake_geopandas/_version.py export-subst

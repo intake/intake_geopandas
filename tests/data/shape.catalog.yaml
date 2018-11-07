@@ -1,0 +1,9 @@
+plugins:
+  source:
+    - module: intake_geopandas
+sources:
+  mogreps_g_manifest:
+    description: Some example shape file.
+    driver: shape
+    args:
+      urlpath: '{CATALOG_PATH}/stations/stations.shp'

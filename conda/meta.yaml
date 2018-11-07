@@ -1,5 +1,5 @@
 package:
-   name: intake_s3_manifests
+   name: intake_geopandas
    version: {{ GIT_DESCRIBE_TAG }}
 
 source:
@@ -19,7 +19,7 @@ requirements:
     - pandas
   run:
     - intake>=0.2
-    - s3fs
+    - geopandas
     - dask
     - pandas
 
@@ -32,8 +32,8 @@ test:
     - py.test --verbose
 
 about:
-  home: https://github.com/informaticslab/intake-s3-manifests
+  home: https://github.com/informaticslab/intake-geopandas
   license: BSD
   license_file: LICENSE
   summary: |
-    S3 manifests plugin for Intake
+    Geopandas plugin for Intake

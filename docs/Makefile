@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = intake_s3_manifests
+SPHINXPROJ    = intake_geopandas
 SOURCEDIR     = source
 BUILDDIR      = build
 

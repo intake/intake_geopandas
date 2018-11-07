@@ -1,7 +1,7 @@
-Welcome to intake_iris's documentation!
+Welcome to intake_geopandas' documentation!
 ================================================
 
-This package enables the set of data-loading methods from S3 manifests to be used within the Intake
+This package enables the set of data-loading methods using geopandas to be used within the Intake
 data access and cataloging system.
 
 .. toctree::

@@ -2,7 +2,7 @@ API Reference
 =============
 
 .. autosummary::
-   intake_s3_manifests.S3ManifestSource
+   intake_geopandas.ShapeSource
 
-.. autoclass:: intake_s3_manifests.S3ManifestSource
+.. autoclass:: intake_geopandas.ShapeSource
    :members:

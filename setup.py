@@ -6,15 +6,15 @@ import versioneer
 requires = open('requirements.txt').read().strip().split('\n')
 
 setup(
-    name='intake_s3_manifests',
+    name='intake_geopandas',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description='S3 manifests plugin for Intake',
-    url='https://github.com/informatics-lab/intake-s3-manifests',
+    description='Geopandas plugin for Intake',
+    url='https://github.com/informatics-lab/intake_geopandas',
     maintainer='Jacob Tomlinson',
     maintainer_email='jacob.tomlinson@informaticslab.co.uk',
     license='BSD',
-    py_modules=['intake_s3_manifests'],
+    py_modules=['intake_geopandas'],
     packages=find_packages(),
     package_data={'': ['*.csv', '*.yml', '*.html']},
     include_package_data=True,
