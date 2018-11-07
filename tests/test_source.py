@@ -20,10 +20,10 @@ def stations_datasource(data_filenames):
 
 
 def test_stations_datasource(stations_datasource):
-    info = stations_datasource.discover()
+    data = stations_datasource.read()
 
-    assert info['dtype'] == {'name': 'object',
-                             'marker-col': 'object',
-                             'marker-sym': 'object',
-                             'line': 'object',
-                             'geometry': 'object'}
+    assert 'name' in data
+    assert 'marker-col' in data
+    assert 'marker-sym' in data
+    assert 'line' in data
+    assert 'geometry' in data

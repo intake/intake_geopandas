@@ -6,7 +6,7 @@ intake_geopandas: [Geopandas](http://geopandas.org/) plugin for [Intake](https:/
 
 See [Intake docs](https://intake.readthedocs.io/en/latest/overview.html).
 
-In `intake_geopandas_`, there are plugins provided for reading manifests into a geopandas dataframe
+In `intake_geopandas`, there are plugins provided for reading manifests into a geopandas dataframe
   - Shape Files
 
 ### Installation
