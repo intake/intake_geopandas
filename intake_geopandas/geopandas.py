@@ -12,11 +12,6 @@ class GeoPandasSource(DataSource, ABC):
     container = 'dataframe'
     partition_access = True
 
-    @property #type: ignore
-    @abstractmethod
-    def name(self):
-        pass
-
     def __init__(self, urlpath, bbox=None, geopandas_kwargs=None, metadata=None):
         """
         Parameters
@@ -80,11 +75,7 @@ class GeoPandasFileSource(GeoPandasSource):
             urlpath, bbox=self._bbox, **self._geopandas_kwargs)
 
 class GeoJSONSource(GeoPandasFileSource):
-    @property
-    def name(self):
-        return 'geojson'
+    name='geojson'
 
 class ShapefileSource(GeoPandasFileSource):
-    @property
-    def name(self):
-        return 'shapefile'
+    name='shapefile'
