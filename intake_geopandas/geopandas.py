@@ -1,18 +1,21 @@
 # -*- coding: utf-8 -*-
-from . import __version__
+from abc import ABC, abstractmethod
+
 from intake.source.base import DataSource, Schema
+import geopandas
 
-import json
-import dask.dataframe as dd
-from datetime import datetime, timedelta
+from . import __version__
 
-
-class ShapeSource(DataSource):
+class GeoPandasSource(DataSource, ABC):
     """Shape file intake source"""
-    name = 'shape'
     version = __version__
     container = 'dataframe'
     partition_access = True
+
+    @property #type: ignore
+    @abstractmethod
+    def name(self):
+        pass
 
     def __init__(self, urlpath, bbox=None, geopandas_kwargs=None, metadata=None):
         """
@@ -27,22 +30,21 @@ class ShapeSource(DataSource):
             Filter features by given bounding box, GeoSeries, or GeoDataFrame.
             CRS mis-matches are resolved if given a GeoSeries or GeoDataFrame.
         geopandas_kwargs : dict
-            Any further arguments to pass to geopandas's read_file.
+            Any further arguments to pass to geopandas's read_* function.
         """
         self.urlpath = urlpath
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
 
-        super(ShapeSource, self).__init__(metadata=metadata)
+        super(GeoPandasSource, self).__init__(metadata=metadata)
 
+    @abstractmethod
     def _open_dataset(self, urlpath):
-        """Open dataset using geopandas and use pattern fields to set new columns
         """
-        import geopandas
-
-        self._dataframe = geopandas.read_file(
-            urlpath, bbox=self._bbox, **self._geopandas_kwargs)
+        Open dataset using geopandas and use pattern fields to set new columns.
+        """
+        raise NotImplementedError('GeoPandasSource is an abstract class')
 
     def _get_schema(self):
         if self._dataframe is None:
@@ -69,3 +71,20 @@ class ShapeSource(DataSource):
 
     def _close(self):
         self._dataframe = None
+
+class GeoPandasFileSource(GeoPandasSource):
+    def _open_dataset(self, urlpath):
+        """Open dataset using geopandas and use pattern fields to set new columns
+        """
+        self._dataframe = geopandas.read_file(
+            urlpath, bbox=self._bbox, **self._geopandas_kwargs)
+
+class GeoJSONSource(GeoPandasFileSource):
+    @property
+    def name(self):
+        return 'geojson'
+
+class ShapefileSource(GeoPandasFileSource):
+    @property
+    def name(self):
+        return 'shapefile'
