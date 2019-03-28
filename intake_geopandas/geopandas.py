@@ -7,7 +7,9 @@ import geopandas
 from . import __version__
 
 class GeoPandasSource(DataSource, ABC):
-    """Shape file intake source"""
+    """
+    Base class intake source for loading GeoDataFrames.
+    """
     version = __version__
     container = 'dataframe'
     partition_access = True
@@ -70,7 +72,8 @@ class GeoPandasFileSource(GeoPandasSource):
         super().__init__(metadata=metadata)
 
     def _open_dataset(self):
-        """Open dataset using geopandas and use pattern fields to set new columns
+        """
+        Open dataset using geopandas and use pattern fields to set new columns.
         """
         self._dataframe = geopandas.read_file(
             self.uri, bbox=self._bbox, **self._geopandas_kwargs)
@@ -90,6 +93,12 @@ class PostGISSource(GeoPandasSource):
         ----------
         uri : str
             The connection string for the PostGIS database.
+        sql_expr: str, optional
+            The SQL expression used to load from the database.
+            Must include either `sql_expr` or `table`.
+        table: str, optional
+            The table to load from the database.
+            This is ignored if `sql_expr` is provided.
         geopandas_kwargs : dict
             Any further arguments to pass to geopandas's read_postgis function.
         """
