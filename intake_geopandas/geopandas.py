@@ -84,9 +84,7 @@ class GeoJSONSource(GeoPandasFileSource):
 class ShapefileSource(GeoPandasFileSource):
     name="shapefile"
 
-class PostGISSource(GeoPandasSource):
-    name="postgis"
-
+class GeoPandasSQLSource(GeoPandasSource):
     def __init__(self, uri, sql_expr=None, table=None, geopandas_kwargs=None, metadata=None):
         """
         Parameters
@@ -118,3 +116,9 @@ class PostGISSource(GeoPandasSource):
     def _open_dataset(self):
         self._dataframe = geopandas.read_postgis(
             self.sql_expr, self.uri, **self._geopandas_kwargs)
+
+class PostGISSource(GeoPandasSQLSource):
+    name="postgis"
+
+class SpatiaLiteSource(GeoPandasSQLSource):
+    name="spatialite"
