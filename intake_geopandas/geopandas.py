@@ -49,11 +49,11 @@ class GeoPandasSource(DataSource, ABC):
         self._dataframe = None
 
 class GeoPandasFileSource(GeoPandasSource):
-    def __init__(self, uri, bbox=None, geopandas_kwargs=None, metadata=None):
+    def __init__(self, urlpath, bbox=None, geopandas_kwargs=None, metadata=None):
         """
         Parameters
         ----------
-        uri : str or iterable, location of data
+        urlpath : str or iterable, location of data
             Either the absolute or relative path to the file or URL to be opened.
             Some examples:
             - ``{{ CATALOG_DIR }}data/states.shp``
@@ -64,7 +64,7 @@ class GeoPandasFileSource(GeoPandasSource):
         geopandas_kwargs : dict
             Any further arguments to pass to geopandas's read_file function.
         """
-        self.uri = uri
+        self.urlpath = urlpath
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
@@ -76,7 +76,7 @@ class GeoPandasFileSource(GeoPandasSource):
         Open dataset using geopandas and use pattern fields to set new columns.
         """
         self._dataframe = geopandas.read_file(
-            self.uri, bbox=self._bbox, **self._geopandas_kwargs)
+            self.urlpath, bbox=self._bbox, **self._geopandas_kwargs)
 
 class GeoJSONSource(GeoPandasFileSource):
     name="geojson"
