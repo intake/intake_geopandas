@@ -6,6 +6,7 @@ import geopandas
 
 from . import __version__
 
+
 class GeoPandasSource(DataSource, ABC):
     """
     Base class intake source for loading GeoDataFrames.
@@ -48,6 +49,7 @@ class GeoPandasSource(DataSource, ABC):
     def _close(self):
         self._dataframe = None
 
+
 class GeoPandasFileSource(GeoPandasSource):
     def __init__(self, urlpath, bbox=None, geopandas_kwargs=None, metadata=None):
         """
@@ -78,11 +80,14 @@ class GeoPandasFileSource(GeoPandasSource):
         self._dataframe = geopandas.read_file(
             self.urlpath, bbox=self._bbox, **self._geopandas_kwargs)
 
+
 class GeoJSONSource(GeoPandasFileSource):
     name="geojson"
 
+
 class ShapefileSource(GeoPandasFileSource):
     name="shapefile"
+
 
 class GeoPandasSQLSource(GeoPandasSource):
     def __init__(self, uri, sql_expr=None, table=None, geopandas_kwargs=None, metadata=None):
@@ -117,8 +122,10 @@ class GeoPandasSQLSource(GeoPandasSource):
         self._dataframe = geopandas.read_postgis(
             self.sql_expr, self.uri, **self._geopandas_kwargs)
 
+
 class PostGISSource(GeoPandasSQLSource):
     name="postgis"
+
 
 class SpatiaLiteSource(GeoPandasSQLSource):
     name="spatialite"
