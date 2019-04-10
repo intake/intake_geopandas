@@ -7,11 +7,12 @@ In order to run, SpatiaLite must be installed and configured.
 import pytest
 
 import geopandas
-from geopandas import read_postgis, read_file
+from geopandas import read_file
 
 from intake_geopandas import SpatiaLiteSource
 
 from .util import connect_spatialite, create_spatialite, validate_boro_df
+
 
 @pytest.fixture
 def df_nybb():
@@ -33,8 +34,10 @@ def test_read_spatialite_null_geom(df_nybb):
         geom_col = df_nybb.geometry.name
         df_nybb.geometry.iat[0] = None
         create_spatialite(con, df_nybb)
-        sql = 'SELECT ogc_fid, borocode, boroname, shape_leng, shape_area, AsEWKB("{0}") AS "{0}" FROM nybb'.format(geom_col)
-        df = SpatiaLiteSource(con, sql_expr=sql, geopandas_kwargs= {'geom_col': geom_col}).read()
+        sql = ('SELECT ogc_fid, borocode, boroname, shape_leng, shape_area, '
+               'AsEWKB("{0}") AS "{0}" FROM nybb').format(geom_col)
+        df = SpatiaLiteSource(con, sql_expr=sql, geopandas_kwargs={
+                              'geom_col': geom_col}).read()
         validate_boro_df(df)
     finally:
         if 'con' in locals():
@@ -52,8 +55,10 @@ def test_read_spatialite_binary(df_nybb):
     else:
         geom_col = df_nybb.geometry.name
         create_spatialite(con, df_nybb)
-        sql = 'SELECT ogc_fid, borocode, boroname, shape_leng, shape_area, ST_AsBinary("{0}") AS "{0}" FROM nybb'.format(geom_col)
-        df = SpatiaLiteSource(con, sql_expr=sql, geopandas_kwargs= {'geom_col': geom_col}).read()
+        sql = ('SELECT ogc_fid, borocode, boroname, shape_leng, shape_area, '
+               'ST_AsBinary("{0}") AS "{0}" FROM nybb').format(geom_col)
+        df = SpatiaLiteSource(con, sql_expr=sql, geopandas_kwargs={
+                              'geom_col': geom_col}).read()
         validate_boro_df(df)
     finally:
         if 'con' in locals():

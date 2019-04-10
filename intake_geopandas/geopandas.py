@@ -15,7 +15,6 @@ class GeoPandasSource(DataSource, ABC):
     container = 'dataframe'
     partition_access = True
 
-
     @abstractmethod
     def _open_dataset(self):
         """
@@ -51,13 +50,14 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
-    def __init__(self, urlpath, bbox=None, geopandas_kwargs=None, metadata=None):
+    def __init__(self, urlpath, bbox=None,
+                 geopandas_kwargs=None, metadata=None):
         """
         Parameters
         ----------
         urlpath : str or iterable, location of data
-            Either the absolute or relative path to the file or URL to be opened.
-            Some examples:
+            Either the absolute or relative path to the file or URL to be
+            opened. Some examples:
             - ``{{ CATALOG_DIR }}data/states.shp``
             - ``http://some.domain.com/data/states.geo.json``
         bbox : tuple | GeoDataFrame or GeoSeries, default None
@@ -82,15 +82,16 @@ class GeoPandasFileSource(GeoPandasSource):
 
 
 class GeoJSONSource(GeoPandasFileSource):
-    name="geojson"
+    name = "geojson"
 
 
 class ShapefileSource(GeoPandasFileSource):
-    name="shapefile"
+    name = "shapefile"
 
 
 class GeoPandasSQLSource(GeoPandasSource):
-    def __init__(self, uri, sql_expr=None, table=None, geopandas_kwargs=None, metadata=None):
+    def __init__(self, uri, sql_expr=None, table=None,
+                 geopandas_kwargs=None, metadata=None):
         """
         Parameters
         ----------
@@ -124,8 +125,8 @@ class GeoPandasSQLSource(GeoPandasSource):
 
 
 class PostGISSource(GeoPandasSQLSource):
-    name="postgis"
+    name = "postgis"
 
 
 class SpatiaLiteSource(GeoPandasSQLSource):
-    name="spatialite"
+    name = "spatialite"

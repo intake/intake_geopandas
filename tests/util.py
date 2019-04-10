@@ -3,8 +3,6 @@
 import sqlite3
 
 from geopandas import GeoDataFrame
-from geopandas.testing import (
-    geom_equals, geom_almost_equals, assert_geoseries_equal)  # flake8: noqa
 from pandas import Series
 
 
@@ -28,15 +26,19 @@ def get_srid(df):
     """Return srid from `df.crs`."""
     crs = df.crs
     return (int(crs['init'][5:]) if 'init' in crs
-                                 and crs['init'].startswith('epsg:')
+            and crs['init'].startswith('epsg:')
             else 0)
 
 
 def connect_spatialite():
     """
-    Return a memory-based SQLite3 connection with SpatiaLite enabled & initialized.
+    Return a memory-based SQLite3 connection with SpatiaLite
+    enabled & initialized.
 
-    `The sqlite3 module must be built with loadable extension support <https://docs.python.org/3/library/sqlite3.html#f1>`_ and `SpatiaLite <https://www.gaia-gis.it/fossil/libspatialite/index>`_ must be available on the system as a SQLite module.
+    `The sqlite3 module must be built with loadable extension support
+    <https://docs.python.org/3/library/sqlite3.html#f1>`_ and
+    `SpatiaLite <https://www.gaia-gis.it/fossil/libspatialite/index>`_
+    must be available on the system as a SQLite module.
     Packages available on Anaconda meet requirements.
 
     Exceptions
@@ -53,6 +55,7 @@ def connect_spatialite():
         con.close()
         raise
     return con
+
 
 def create_spatialite(con, df):
     """
@@ -75,7 +78,9 @@ def create_spatialite(con, df):
                     ', shape_area REAL'
                     ')')
         con.execute('SELECT AddGeometryColumn(?, ?, ?, ?)',
-                    ('nybb', geom_col, srid, df.geom_type.dropna().iat[0].upper()))
+                    ('nybb',
+                     geom_col, srid, df.geom_type.dropna().iat[0].upper())
+                    )
         con.execute('SELECT CreateSpatialIndex(?, ?)', ('nybb', geom_col))
         sql_row = "INSERT INTO nybb VALUES(?, ?, ?, ?, ?, GeomFromText(?, ?))"
         con.executemany(sql_row,
@@ -87,5 +92,5 @@ def create_spatialite(con, df):
                           row.geometry.wkt if row.geometry
                           else None,
                           srid
-                         ) for row in df.itertuples(index=False)))
+                          ) for row in df.itertuples(index=False)))
     return con
