@@ -6,8 +6,12 @@ intake_geopandas: [Geopandas](http://geopandas.org/) plugin for [Intake](https:/
 
 See [Intake docs](https://intake.readthedocs.io/en/latest/overview.html).
 
-In `intake_geopandas`, there are plugins provided for reading manifests into a geopandas dataframe
-  - Shape Files
+In `intake_geopandas`, there are plugins provided for reading geospatial datasets into a geopandas dataframe.
+It currently supports reading from the following data sources:
+  - GeoJSON files
+  - PostGIS databases
+  - ESRI Shapefiles
+  - Spatialite databases
 
 ### Installation
 
