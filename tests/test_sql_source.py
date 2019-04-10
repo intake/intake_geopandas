@@ -11,7 +11,6 @@ from geopandas import read_file
 
 from intake_geopandas import SpatiaLiteSource
 
-from .util import connect_spatialite, create_spatialite, validate_boro_df
 
 
 @pytest.fixture
@@ -27,6 +26,9 @@ def df_nybb():
 def test_read_spatialite_null_geom(df_nybb):
     """Tests that geometry with NULL is accepted."""
     try:
+        from geopandas.tests.util import (
+            connect_spatialite, create_spatialite, validate_boro_df
+        )
         con = connect_spatialite()
     except Exception:
         raise pytest.skip()
@@ -49,6 +51,9 @@ def test_read_spatialite_null_geom(df_nybb):
 def test_read_spatialite_binary(df_nybb):
     """Tests that geometry read as binary is accepted."""
     try:
+        from geopandas.tests.util import (
+            connect_spatialite, create_spatialite, validate_boro_df
+        )
         con = connect_spatialite()
     except Exception:
         raise pytest.skip()
