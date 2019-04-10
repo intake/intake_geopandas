@@ -20,6 +20,9 @@ def df_nybb():
     return df
 
 
+# Expected to fail until there is a geopandas release
+# with geopandas/geopandas#856
+@pytest.mark.xfail
 def test_read_spatialite_null_geom(df_nybb):
     """Tests that geometry with NULL is accepted."""
     try:
@@ -37,6 +40,9 @@ def test_read_spatialite_null_geom(df_nybb):
         if 'con' in locals():
             con.close()
 
+# Expected to fail until there is a geopandas release
+# with geopandas/geopandas#856
+@pytest.mark.xfail
 def test_read_spatialite_binary(df_nybb):
     """Tests that geometry read as binary is accepted."""
     try:
