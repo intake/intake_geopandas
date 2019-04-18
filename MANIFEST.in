@@ -3,4 +3,5 @@ recursive-include . *.csv
 recursive-include . *.yml
 include versioneer.py
 include requirements.txt
+include README.md
 include intake_geopandas/_version.py
