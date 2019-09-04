@@ -17,6 +17,14 @@ setup(
     py_modules=['intake_geopandas'],
     packages=find_packages(),
     package_data={'': ['*.csv', '*.yml', '*.html']},
+    entry_points={
+        'intake.drivers': [
+            'geojson = intake_geopandas.geopandas:GeoJSONSource',
+            'postgis = intake_geopandas.geopandas:PostGISSource',
+            'shapefile = intake_geopandas.geopandas:ShapefileSource',
+            'spatialite = intake_geopandas.geopandas:SpatiaLiteSource',
+        ]
+    },
     include_package_data=True,
     install_requires=requires,
     long_description_content_type='text/markdown',
