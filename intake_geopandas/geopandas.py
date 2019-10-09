@@ -77,6 +77,7 @@ class GeoPandasFileSource(GeoPandasSource):
         """
         Open dataset using geopandas and use pattern fields to set new columns.
         """
+        urlpath = self._get_cache(self.urlpath)[0]
         self._dataframe = geopandas.read_file(
             self.urlpath, bbox=self._bbox, **self._geopandas_kwargs)
 
