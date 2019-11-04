@@ -20,25 +20,8 @@ script:
 - |
   flake8 .
   if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      conda build -c intake -c defaults -c conda-forge ./conda
+      conda build -c defaults -c conda-forge ./conda
   else
       # Workaround for Travis-CI bug #2: https://github.com/travis-ci/travis-ci/issues/7773
-      conda build -c intake -c defaults -c conda-forge --no-test ./conda
+      conda build -c defaults -c conda-forge --no-test ./conda
   fi
-- |
-  if [ -n "$TRAVIS_TAG" ]; then
-      # If tagged git version, upload package to main channel
-      anaconda -t ${ANACONDA_TOKEN} upload -u informaticslab --force `conda build --output ./conda`
-  elif ! [ -n "$TRAVIS_PULL_REQUEST" ]; then
-      # Otherwise upload package to dev channel
-      anaconda -t ${ANACONDA_TOKEN} upload -u informaticslab --label dev --force `conda build --output ./conda`
-  fi
-
-deploy:
-  provider: pypi
-  user: $PYPI_USER
-  password: $PYPI_PASSWORD
-  skip_cleanup: true
-  on:
-    tags: true
-    repo: informatics-lab/intake_geopandas
