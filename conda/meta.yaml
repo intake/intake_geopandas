@@ -32,8 +32,8 @@ test:
     - py.test --verbose
 
 about:
-  home: https://github.com/informaticslab/intake-geopandas
+  home: https://github.com/intake/intake-geopandas
   license: BSD
   license_file: LICENSE
   summary: |
-    Geopandas plugin for Intake
+    Geopandas plugin for Intake, providing drivers for Shapefiles, GeoJSON, PostGIS, and Spatialite

@@ -1,8 +1,8 @@
 # intake_geopandas
 
-[![Build Status](https://travis-ci.com/informatics-lab/intake_geopandas.svg?branch=master)](https://travis-ci.com/informatics-lab/intake_geopandas)
+[![Build Status](https://travis-ci.com/intake/intake_geopandas.svg?branch=master)](https://travis-ci.com/intake/intake_geopandas)
 
-intake_geopandas: [Geopandas](http://geopandas.org/) plugin for [Intake](https://github.com/informatics-lab/intake_geopandas)
+intake_geopandas: [Geopandas](http://geopandas.org/) plugin for [Intake](https://github.com/intake/intake)
 
 See [Intake docs](https://intake.readthedocs.io/en/latest/overview.html).
 
@@ -15,8 +15,8 @@ It currently supports reading from the following data sources:
 
 ### Installation
 
-The conda install instructions are:
+The pip install instructions are:
 
 ```
-conda install -c informaticslab -c intake intake_geopandas
+pip install intake_geopandas
 ```
