@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
-
+import fsspec
 from intake.source.base import DataSource, Schema
 import geopandas
 
@@ -23,8 +23,14 @@ class GeoPandasSource(DataSource, ABC):
         raise NotImplementedError('GeoPandasSource is an abstract class')
 
     def _get_schema(self):
+        # Aarons edit
+        # self.urlpath = self._get_cache(self.urlpath)[0]
+
         if self._dataframe is None:
             self._open_dataset()
+            
+           
+          
 
         dtypes = self._dataframe.dtypes.to_dict()
         dtypes = {n: str(t) for (n, t) in dtypes.items()}
@@ -51,7 +57,7 @@ class GeoPandasSource(DataSource, ABC):
 
 class GeoPandasFileSource(GeoPandasSource):
     def __init__(self, urlpath, bbox=None,
-                 geopandas_kwargs=None, metadata=None):
+                 geopandas_kwargs=None, storage_options=None, metadata=None):
         """
         Parameters
         ----------
@@ -70,6 +76,7 @@ class GeoPandasFileSource(GeoPandasSource):
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
+        self.storage_options = storage_options or {}
 
         super().__init__(metadata=metadata)
 
@@ -77,8 +84,28 @@ class GeoPandasFileSource(GeoPandasSource):
         """
         Open dataset using geopandas and use pattern fields to set new columns.
         """
+        # new caching
+        #url = fsspec.open_local(self.urlpath, **self.storage_options)
+        
+        # old caching
+        if self.cache:
+            print('inside old caching')
+            self.cache[0].load(self.urlpath)
+            #import os
+            #assert os.listdir(self.cache[0]._path(self.urlpath))
+        
+        if self.cache:
+            try:
+                url = 'zip://'+self.cache[0]._path(self.urlpath)
+            except:
+                print(f'fallback to {self.urlpath}')
+                url = self.urlpath
+        else:
+            print(f'fallback to {self.urlpath} without trying to load from cache')
+            url = self.urlpath
+        print(f'Load from {url}')
         self._dataframe = geopandas.read_file(
-            self.urlpath, bbox=self._bbox, **self._geopandas_kwargs)
+            url, bbox=self._bbox, **self._geopandas_kwargs)
 
 
 class GeoJSONSource(GeoPandasFileSource):

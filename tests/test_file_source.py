@@ -55,3 +55,20 @@ def test_countries_datasource(geojson_datasource):
         "id": "object",
         "name": "object",
     }
+
+
+def test_cache():
+    import intake
+    item = intake.open_catalog('tests/data/shape.catalog.yaml')['MEOW_cache']
+    if isinstance(item.cache[0], str):
+        item.cache[0].clear_cache()
+    # read new
+    shp = item.read()
+    urlpath = item.urlpath
+    expected_location_on_disk = item.cache[0]._path(urlpath)
+    assert isinstance(expected_location_on_disk, str)
+    import geopandas
+    assert isinstance(shp, geopandas.GeoDataFrame)
+    import os
+    assert os.path.exists(expected_location_on_disk)
+

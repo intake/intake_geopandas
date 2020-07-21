@@ -7,3 +7,11 @@ sources:
     driver: shape
     args:
       urlpath: '{CATALOG_PATH}/stations/stations.shp'
+  MEOW_cache:
+    description: MEOW
+    driver: intake_geopandas.geopandas.ShapefileSource
+    args:
+      urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+    cache:
+      - type: file
+        argkey: urlpath
