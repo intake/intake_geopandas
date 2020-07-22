@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
+import warnings
 from abc import ABC, abstractmethod
+
 import fsspec
-from intake.source.base import DataSource, Schema
 import geopandas
+from intake.source.base import DataSource, Schema
 
 from . import __version__
 
@@ -11,6 +14,7 @@ class GeoPandasSource(DataSource, ABC):
     """
     Base class intake source for loading GeoDataFrames.
     """
+
     version = __version__
     container = 'dataframe'
     partition_access = True
@@ -23,22 +27,18 @@ class GeoPandasSource(DataSource, ABC):
         raise NotImplementedError('GeoPandasSource is an abstract class')
 
     def _get_schema(self):
-        # Aarons edit
-        # self.urlpath = self._get_cache(self.urlpath)[0]
-
         if self._dataframe is None:
             self._open_dataset()
-            
-           
-          
 
         dtypes = self._dataframe.dtypes.to_dict()
         dtypes = {n: str(t) for (n, t) in dtypes.items()}
-        return Schema(datashape=None,
-                      dtype=dtypes,
-                      shape=(None, len(dtypes)),
-                      npartitions=1,
-                      extra_metadata={})
+        return Schema(
+            datashape=None,
+            dtype=dtypes,
+            shape=(None, len(dtypes)),
+            npartitions=1,
+            extra_metadata={},
+        )
 
     def _get_partition(self, i):
         self._get_schema()
@@ -56,8 +56,14 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
-    def __init__(self, urlpath, bbox=None,
-                 geopandas_kwargs=None, storage_options=None, metadata=None):
+    def __init__(
+        self,
+        urlpath,
+        bbox=None,
+        geopandas_kwargs=None,
+        storage_options=None,
+        metadata=None,
+    ):
         """
         Parameters
         ----------
@@ -78,47 +84,70 @@ class GeoPandasFileSource(GeoPandasSource):
         self._dataframe = None
         self.storage_options = storage_options or {}
 
+        # warn if same_names not True
+        if 'cache' in self.urlpath and 'zip' in self.urlpath:
+            same_names = False  # default
+            # find different same_names setting
+            for c in ['blockcache', 'filecache', 'simplecache']:
+                if c in self.storage_options:
+                    if 'same_names' in self.storage_options[c]:
+                        same_names = self.storage_options[c]['same_names']
+            if not same_names:
+                warnings.warn(
+                    'Need same_names = True for local caching of `zip` files.'
+                )
+
         super().__init__(metadata=metadata)
 
     def _open_dataset(self):
         """
         Open dataset using geopandas and use pattern fields to set new columns.
         """
-        # new caching
-        #url = fsspec.open_local(self.urlpath, **self.storage_options)
-        
-        # old caching
-        if self.cache:
+        if 'cache' in self.urlpath:  # new caching
+            url = fsspec.open_local(self.urlpath, **self.storage_options)
+            if not os.path.exists(url):
+                # explicitly loading the file
+                url = fsspec.open(self.urlpath, **self.storage_options)
+            print(f'url from fsspec.open_local: {url}')
+        elif self.cache:  # old caching
             print('inside old caching')
             self.cache[0].load(self.urlpath)
-            #import os
-            #assert os.listdir(self.cache[0]._path(self.urlpath))
-        
-        if self.cache:
-            try:
-                url = 'zip://'+self.cache[0]._path(self.urlpath)
-            except:
-                print(f'fallback to {self.urlpath}')
+            if isinstance(self.cache[0], str):
+                url = self.cache[0]
+            else:
+                print(f'fallback to {self.urlpath} without trying to load from cache')
                 url = self.urlpath
         else:
-            print(f'fallback to {self.urlpath} without trying to load from cache')
+            print('no caching option found')
             url = self.urlpath
+        # opening locally cached files, geopandas expects local zip paths with `zip://`
+        # see https://geopandas.org/io.html
+        # extract ending
+        if '.' in self.urlpath.split('/')[-1]:
+            ending = self.urlpath.split('.')[-1]
+        else:
+            ending = None
+        is_cached = os.path.exists(url)
+        if ending == 'zip' and is_cached:
+            url = f'{ending}://{url}'
         print(f'Load from {url}')
         self._dataframe = geopandas.read_file(
-            url, bbox=self._bbox, **self._geopandas_kwargs)
+            url, bbox=self._bbox, **self._geopandas_kwargs
+        )
 
 
 class GeoJSONSource(GeoPandasFileSource):
-    name = "geojson"
+    name = 'geojson'
 
 
 class ShapefileSource(GeoPandasFileSource):
-    name = "shapefile"
+    name = 'shapefile'
 
 
 class GeoPandasSQLSource(GeoPandasSource):
-    def __init__(self, uri, sql_expr=None, table=None,
-                 geopandas_kwargs=None, metadata=None):
+    def __init__(
+        self, uri, sql_expr=None, table=None, geopandas_kwargs=None, metadata=None
+    ):
         """
         Parameters
         ----------
@@ -137,9 +166,9 @@ class GeoPandasSQLSource(GeoPandasSource):
         if sql_expr:
             self.sql_expr = sql_expr
         elif table:
-            self.sql_expr = f"SELECT * FROM {table}"
+            self.sql_expr = f'SELECT * FROM {table}'
         else:
-            raise ValueError("Must provide either a sql_expr or a table")
+            raise ValueError('Must provide either a sql_expr or a table')
 
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
@@ -148,12 +177,13 @@ class GeoPandasSQLSource(GeoPandasSource):
 
     def _open_dataset(self):
         self._dataframe = geopandas.read_postgis(
-            self.sql_expr, self.uri, **self._geopandas_kwargs)
+            self.sql_expr, self.uri, **self._geopandas_kwargs
+        )
 
 
 class PostGISSource(GeoPandasSQLSource):
-    name = "postgis"
+    name = 'postgis'
 
 
 class SpatiaLiteSource(GeoPandasSQLSource):
-    name = "spatialite"
+    name = 'spatialite'
