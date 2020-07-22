@@ -104,8 +104,10 @@ def test_remote_GeoJSONSource(GeoJSONSource_countries_remote, same_names):
     """GeoJSONSource works with either `same_names` True or False."""
     item = GeoJSONSource_countries_remote
     item.storage_options['simplecache']['same_names'] = same_names
-    item.read()
     expected_location_on_disk = item.storage_options['simplecache']['cache_storage']
+    try_clean_new_cache(item)
+    assert not os.path.exists(expected_location_on_disk)
+    item.read()
     assert os.path.exists(expected_location_on_disk)
     try_clean_new_cache(item)
     assert not os.path.exists(expected_location_on_disk)

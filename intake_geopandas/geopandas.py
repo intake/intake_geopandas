@@ -84,7 +84,7 @@ class GeoPandasFileSource(GeoPandasSource):
         self._dataframe = None
         self.storage_options = storage_options or {}
 
-        # warn if same_names not True
+        # warn if using fsspec caching and same_names not True for zip files
         if 'cache' in self.urlpath and 'zip' in self.urlpath:
             same_names = False  # default
             # find different same_names setting
@@ -106,30 +106,26 @@ class GeoPandasFileSource(GeoPandasSource):
         if 'cache' in self.urlpath:  # new caching
             url = fsspec.open_local(self.urlpath, **self.storage_options)
             if not os.path.exists(url):
-                # explicitly loading the file
+                # explicitly loading the file if not cached
                 url = fsspec.open(self.urlpath, **self.storage_options)
-            print(f'url from fsspec.open_local: {url}')
         elif self.cache:  # old caching
-            print('inside old caching')
             self.cache[0].load(self.urlpath)
             if isinstance(self.cache[0], str):
                 url = self.cache[0]
             else:
-                print(f'fallback to {self.urlpath} without trying to load from cache')
                 url = self.urlpath
         else:
-            print('no caching option found')
             url = self.urlpath
         # opening locally cached files, geopandas expects local zip paths with `zip://`
         # see https://geopandas.org/io.html
-        # extract ending
-        if '.' in self.urlpath.split('/')[-1]:
-            ending = self.urlpath.split('.')[-1]
-        else:
-            ending = None
-        is_cached = os.path.exists(url)
-        if ending == 'zip' and is_cached:
-            url = f'{ending}://{url}'
+        if os.path.exists(url):
+            # extract ending, expect url
+            if '.' in self.urlpath.split('/')[-1]:
+                ending = self.urlpath.split('.')[-1]
+            else:
+                ending = None
+            if ending == 'zip':
+                url = f'{ending}://{url}'
         print(f'Load from {url}')
         self._dataframe = geopandas.read_file(
             url, bbox=self._bbox, **self._geopandas_kwargs
