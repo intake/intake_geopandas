@@ -125,7 +125,11 @@ class GeoPandasFileSource(GeoPandasSource):
                 is_remote = True
             else:
                 is_remote = False
-        except (requests.exceptions.MissingSchema, requests.exceptions.ConnectionError):
+        except (
+            requests.exceptions.MissingSchema,
+            requests.exceptions.InvalidSchema,
+            requests.exceptions.ConnectionError,
+        ):
             is_remote = False
         if not is_remote:
             # extract ending, expect url
@@ -135,6 +139,7 @@ class GeoPandasFileSource(GeoPandasSource):
                 ending = None
             if ending == 'zip':
                 url = f'{ending}://{url}'
+        print(f'Loading from {url}')
         self._dataframe = geopandas.read_file(
             url, bbox=self._bbox, **self._geopandas_kwargs
         )

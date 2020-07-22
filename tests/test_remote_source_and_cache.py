@@ -88,6 +88,28 @@ def test_same_name_required_else_warn(same_names):
     assert not os.path.exists(expected_location_on_disk)
 
 
+@pytest.mark.skip(reason='fails')
+def test_choose_one_from_many_shapefiles_in_zip():
+    first_item = intake.open_catalog('tests/data/shape.catalog.yaml')[
+        'ALA_many_shapefiles_in_one_zip'
+    ]
+    # read standard (first?) shapefile from this zip and cache zip
+    first = first_item.read()
+    second_item = intake.open_catalog('tests/data/shape.catalog.yaml')[
+        'ALA_many_shapefiles_in_one_zip'
+    ]
+    second_item.urlpath = f'{second_item.urlpath}!gadm36_ALA_0.shp'
+    second = second_item.read()
+    third_item = intake.open_catalog('tests/data/shape.catalog.yaml')[
+        'ALA_many_shapefiles_in_one_zip'
+    ]
+    third_item.urlpath = f'{third_item.urlpath}!gadm36_ALA_1.shp'
+    print(third_item)
+    third = third_item.read()
+    assert first.equals(second)
+    assert not second.equals(third)
+
+
 @pytest.fixture
 def GeoJSONSource_countries_remote():
     url = (
