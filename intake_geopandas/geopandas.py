@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 import fsspec
 import geopandas
+import requests
 from intake.source.base import DataSource, Schema
 
 from . import __version__
@@ -114,11 +115,19 @@ class GeoPandasFileSource(GeoPandasSource):
                 url = self.cache[0]
             else:
                 url = self.urlpath
-        else:
+        else:  # no caching
             url = self.urlpath
+
         # opening locally cached files, geopandas expects local zip paths with `zip://`
         # see https://geopandas.org/io.html
-        if os.path.exists(url):
+        try:
+            if requests.head(url).status_code == 200:
+                is_remote = True
+            else:
+                is_remote = False
+        except (requests.exceptions.MissingSchema, requests.exceptions.ConnectionError):
+            is_remote = False
+        if not is_remote:
             # extract ending, expect url
             if '.' in self.urlpath.split('/')[-1]:
                 ending = self.urlpath.split('.')[-1]
@@ -126,7 +135,6 @@ class GeoPandasFileSource(GeoPandasSource):
                 ending = None
             if ending == 'zip':
                 url = f'{ending}://{url}'
-        print(f'Load from {url}')
         self._dataframe = geopandas.read_file(
             url, bbox=self._bbox, **self._geopandas_kwargs
         )

@@ -18,7 +18,7 @@ def try_clean_old_cache(item):
 
 
 def try_clean_new_cache(item):
-    c = None  # default
+    c = None
     for c in ['blockcache', 'filecache', 'simplecache']:
         if c in item.storage_options:
             caching = c
@@ -90,7 +90,10 @@ def test_same_name_required_else_warn(same_names):
 
 @pytest.fixture
 def GeoJSONSource_countries_remote():
-    url = 'simplecache::https://raw.githubusercontent.com/intake/intake_geopandas/master/tests/data/countries.geo.json'
+    url = (
+        'simplecache::https://raw.githubusercontent.com/intake/'
+        'intake_geopandas/master/tests/data/countries.geo.json'
+    )
     return GeoJSONSource(
         **{
             'urlpath': url,
