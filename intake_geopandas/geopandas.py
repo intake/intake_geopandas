@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 from intake.source.base import DataSource, Schema
 import geopandas
+import fsspec
+import warnings
 
 from . import __version__
 
@@ -50,7 +52,7 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
-    def __init__(self, urlpath, bbox=None,
+    def __init__(self, urlpath, bbox=None, storage_options=None,
                  geopandas_kwargs=None, metadata=None):
         """
         Parameters
@@ -70,6 +72,20 @@ class GeoPandasFileSource(GeoPandasSource):
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
+        self.storage_options = storage_options or {}
+
+        # warn if using fsspec caching and same_names not True for zip files
+        if 'cache' in self.urlpath and 'zip' in self.urlpath:
+            same_names = False  # default
+            # find different same_names setting
+            for c in ['blockcache', 'filecache', 'simplecache']:
+                if c in self.storage_options:
+                    if 'same_names' in self.storage_options[c]:
+                        same_names = self.storage_options[c]['same_names']
+            if not same_names:
+                warnings.warn(
+                    'Need same_names = True for local caching of `zip` files.'
+                )
 
         super().__init__(metadata=metadata)
 
@@ -77,8 +93,23 @@ class GeoPandasFileSource(GeoPandasSource):
         """
         Open dataset using geopandas and use pattern fields to set new columns.
         """
+        def find_shp(files):
+            """Find .shp file in list of files from fsspec.open_local."""
+            for f in files:
+                if f.split('.')[-1] == 'shp':
+                    return f
+
+        url = self.urlpath
+        if 'cache::' in url:
+            url = fsspec.open_local(url, **self.storage_options)
+            if isinstance(url, str):  # when url is cached as zip
+                if url.endswith('zip'):
+                    url = 'zip://'+ url
+            elif isinstance(url, list):  # when url is cached unziped
+                url = find_shp(url)
+        print(f'Load from url: {url}')
         self._dataframe = geopandas.read_file(
-            self.urlpath, bbox=self._bbox, **self._geopandas_kwargs)
+            url, bbox=self._bbox, **self._geopandas_kwargs)
 
 
 class GeoJSONSource(GeoPandasFileSource):
