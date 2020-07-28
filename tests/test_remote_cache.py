@@ -10,7 +10,7 @@ from intake_geopandas import GeoJSONSource, ShapefileSource
 
 def try_clean_cache(item):
     c = None
-    for c in ['blockcache', 'filecache', 'simplecache']:
+    for c in ['filecache', 'simplecache']:
         if c in item.storage_options:
             caching = c
     assert c is not None, 'caching not found'
@@ -37,7 +37,6 @@ def test_different_cachings_and_url(url, strategy):
         f'{strategy}::{url}',
         storage_options={strategy: {'same_names': True, 'cache_storage': 'tempfile'}},
     )
-    print(item)
     expected_location = item.storage_options[strategy]['cache_storage']
     try_clean_cache(item)
     assert not os.path.exists(expected_location)

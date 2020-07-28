@@ -75,10 +75,10 @@ class GeoPandasFileSource(GeoPandasSource):
         self.storage_options = storage_options or {}
 
         # warn if using fsspec caching and same_names not True for zip files
-        if 'cache' in self.urlpath and 'zip' in self.urlpath:
+        if 'cache::' in self.urlpath and self.urlpath.endswith('zip'):
             same_names = False  # default
             # find different same_names setting
-            for c in ['blockcache', 'filecache', 'simplecache']:
+            for c in ['filecache', 'simplecache']:
                 if c in self.storage_options:
                     if 'same_names' in self.storage_options[c]:
                         same_names = self.storage_options[c]['same_names']
@@ -107,7 +107,7 @@ class GeoPandasFileSource(GeoPandasSource):
                     url = 'zip://'+ url
             elif isinstance(url, list):  # when url is cached unziped
                 url = find_shp(url)
-        print(f'Load from url: {url}')
+
         self._dataframe = geopandas.read_file(
             url, bbox=self._bbox, **self._geopandas_kwargs)
 
