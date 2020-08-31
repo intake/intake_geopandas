@@ -97,19 +97,6 @@ class GeoPandasFileSource(GeoPandasSource):
         self._dataframe = None
         self.storage_options = storage_options or {}
 
-        # warn if using fsspec caching and same_names not True for zip files
-        if 'cache::' in self.urlpath and self.urlpath.endswith('zip'):
-            same_names = False  # default
-            # find different same_names setting
-            for c in ['filecache', 'simplecache']:
-                if c in self.storage_options:
-                    if 'same_names' in self.storage_options[c]:
-                        same_names = self.storage_options[c]['same_names']
-            if not same_names:
-                warnings.warn(
-                    'Need same_names = True for local caching of `zip` files.'
-                )
-
         super().__init__(metadata=metadata)
 
     def _open_dataset(self):
