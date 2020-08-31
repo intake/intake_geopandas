@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
-import warnings
 
 import fsspec
 import geopandas

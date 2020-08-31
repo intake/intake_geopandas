@@ -3,7 +3,6 @@ import os
 import shutil
 
 import pytest
-from fiona.errors import DriverError
 
 from intake_geopandas import GeoJSONSource, ShapefileSource
 
