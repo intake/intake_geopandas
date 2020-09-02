@@ -3,7 +3,6 @@ import os
 import shutil
 
 import pytest
-from fiona.errors import DriverError
 
 from intake_geopandas import GeoJSONSource, ShapefileSource
 
@@ -20,6 +19,7 @@ def try_clean_cache(item):
             shutil.rmtree(path)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     'url',
     [
@@ -35,6 +35,7 @@ def test_different_cachings_and_url(url, strategy):
     """Test different caching strategies for different urls."""
     item = ShapefileSource(
         f'{strategy}::{url}',
+        use_fsspec=True,
         storage_options={strategy: {'same_names': True, 'cache_storage': 'tempfile'}},
     )
     expected_location = item.storage_options[strategy]['cache_storage']
@@ -46,26 +47,23 @@ def test_different_cachings_and_url(url, strategy):
 
 
 @pytest.mark.parametrize('same_names', [False, True])
-def test_same_name_required_else_warn(same_names):
+def test_same_name_required_else_error(same_names):
     """Test that same_names is required to load zip file from cache. Warns during init
     if same_names is False for zip file."""
     ShapefileSource_args = {
-        'urlpath': 'simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip',
+        'urlpath': 'simplecache::zip://*::http://maps.tnc.org/files/shp/MEOW-TNC.zip',
+        'use_fsspec': True,
         'storage_options': {
             'simplecache': {'same_names': same_names, 'cache_storage': 'tmpfile'}
         },
     }
-    if not same_names:  # initialization warning when same_names False
-        with pytest.warns(UserWarning, match='same_names = True'):
-            item = ShapefileSource(**ShapefileSource_args)
-    else:  # no warning when same_names True
-        item = ShapefileSource(**ShapefileSource_args)
+    item = ShapefileSource(**ShapefileSource_args)
     expected_location_on_disk = item.storage_options['simplecache']['cache_storage']
     try_clean_cache(item)
     assert not os.path.exists(expected_location_on_disk)
     if not same_names:
         # fiona expects paths ending with '.zip' or '.shp'
-        with pytest.raises(DriverError):
+        with pytest.raises(ValueError, match="same_names=True"):
             item.read()
     else:
         item.read()
@@ -83,11 +81,13 @@ def GeoJSONSource_countries_remote():
     return GeoJSONSource(
         **{
             'urlpath': url,
+            'use_fsspec': True,
             'storage_options': {'simplecache': {'cache_storage': 'tempfile'}},
         }
     )
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize('same_names', [False, True])
 def test_remote_GeoJSONSource(GeoJSONSource_countries_remote, same_names):
     """GeoJSONSource works with either `same_names` True or False."""

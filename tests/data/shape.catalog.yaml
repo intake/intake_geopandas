@@ -20,10 +20,11 @@ sources:
     driver: intake_geopandas.geopandas.ShapefileSource
     args:
       urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      use_fsspec: true
       storage_options:
         simplecache:
-          same_names: True
-          cache_storage: tempfile
+          same_names: true
+          cache_storage: /tmp/intake_geopandas
 
 
   ALA_many_shapefiles_in_one_zip:
@@ -33,5 +34,5 @@ sources:
       urlpath: simplecache::zip://gadm36_ALA_0*::https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_ALA_shp.zip
       storage_options:
         simplecache:
-          same_names: True
-          cache_storage: tempfile
+          same_names: true
+          cache_storage: /tmp/intake_geopandas

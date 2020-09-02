@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
 
-from intake.source.base import DataSource, Schema
-import geopandas
 import fsspec
-import warnings
+import geopandas
+from intake.source.base import DataSource, Schema
 
 from . import __version__
 
@@ -52,8 +51,15 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
-    def __init__(self, urlpath, bbox=None, storage_options=None,
-                 geopandas_kwargs=None, metadata=None):
+    def __init__(
+        self,
+        urlpath,
+        use_fsspec=False,
+        storage_options=None,
+        bbox=None,
+        geopandas_kwargs=None,
+        metadata=None,
+    ):
         """
         Parameters
         ----------
@@ -62,54 +68,62 @@ class GeoPandasFileSource(GeoPandasSource):
             opened. Some examples:
             - ``{{ CATALOG_DIR }}data/states.shp``
             - ``http://some.domain.com/data/states.geo.json``
+
+        use_fsspec: bool
+            Whether to use fsspec to open `urlpath`. By default, `urlpath` is passed
+            directly to GeoPandas, which opens the file using `fiona`. However, for some
+            use cases it may be beneficial to read the file using `fsspec` before
+            passing the resulting bytes to GeoPandas (e.g., when using `fsspec` caching).
+            Note that fiona/GDAL and `fsspec` have mutually-incompatible URL chaining
+            syntaxes, so the URLs passed to each may be significantly different.
+
+        storage_options: dict
+            Storage options to pass to fsspec when opening. Only used when
+            `use_fsspec=True`.
+
         bbox : tuple | GeoDataFrame or GeoSeries, default None
             Filter features by given bounding box, GeoSeries, or GeoDataFrame.
             CRS mis-matches are resolved if given a GeoSeries or GeoDataFrame.
+
         geopandas_kwargs : dict
             Any further arguments to pass to geopandas's read_file function.
         """
         self.urlpath = urlpath
+        self._use_fsspec = use_fsspec
+        self._storage_options = storage_options or {}
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
         self.storage_options = storage_options or {}
 
-        # warn if using fsspec caching and same_names not True for zip files
-        if 'cache::' in self.urlpath and self.urlpath.endswith('zip'):
-            same_names = False  # default
-            # find different same_names setting
-            for c in ['filecache', 'simplecache']:
-                if c in self.storage_options:
-                    if 'same_names' in self.storage_options[c]:
-                        same_names = self.storage_options[c]['same_names']
-            if not same_names:
-                warnings.warn(
-                    'Need same_names = True for local caching of `zip` files.'
-                )
-
         super().__init__(metadata=metadata)
 
     def _open_dataset(self):
         """
-        Open dataset using geopandas and use pattern fields to set new columns.
+        Open dataset using geopandas.
         """
-        def find_shp(files):
-            """Find .shp file in list of files from fsspec.open_local."""
-            for f in files:
-                if f.split('.')[-1] == 'shp':
-                    return f
+        if self._use_fsspec:
+            with fsspec.open_files(self.urlpath, **self._storage_options) as f:
+                f = self._resolve_single_file(f) if len(f) > 1 else f[0]
+                self._dataframe = geopandas.read_file(
+                    f,
+                    bbox=self._bbox,
+                    **self._geopandas_kwargs,
+                )
+        else:
+            self._dataframe = geopandas.read_file(
+                self.urlpath,
+                bbox=self._bbox,
+                **self._geopandas_kwargs
+            )
 
-        url = self.urlpath
-        if 'cache::' in url:
-            url = fsspec.open_local(url, **self.storage_options)
-            if isinstance(url, str):  # when url is cached as zip
-                if url.endswith('zip'):
-                    url = 'zip://'+ url
-            elif isinstance(url, list):  # when url is cached unziped
-                url = find_shp(url)
-
-        self._dataframe = geopandas.read_file(
-            url, bbox=self._bbox, **self._geopandas_kwargs)
+    def _resolve_single_file(self, filelist):
+        """
+        Given a list of fsspec OpenFiles, choose one to pass to geopandas.
+        """
+        raise NotImplementedError(
+            "Opening multiple files is not supported by this driver"
+        )
 
 
 class GeoJSONSource(GeoPandasFileSource):
@@ -118,6 +132,19 @@ class GeoJSONSource(GeoPandasFileSource):
 
 class ShapefileSource(GeoPandasFileSource):
     name = "shapefile"
+
+    def _resolve_single_file(self, filelist):
+        """
+        Given a list of fsspec OpenFiles, find a .shp file.
+        """
+        local_files = fsspec.open_local(self.urlpath, **self.storage_options)
+        for f in local_files:
+            if f.endswith(".shp"):
+                return f
+        raise ValueError(
+            f"No shapefile found in {filelist}, if you are using fsspec caching"
+            " consider using same_names=True"
+        )
 
 
 class GeoPandasSQLSource(GeoPandasSource):
