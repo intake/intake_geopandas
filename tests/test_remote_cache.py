@@ -19,7 +19,6 @@ def try_clean_cache(item):
             shutil.rmtree(path)
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize(
     'url',
     [
@@ -87,7 +86,6 @@ def GeoJSONSource_countries_remote():
     )
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize('same_names', [False, True])
 def test_remote_GeoJSONSource(GeoJSONSource_countries_remote, same_names):
     """GeoJSONSource works with either `same_names` True or False."""
