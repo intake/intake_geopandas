@@ -141,7 +141,8 @@ class ShapefileSource(GeoPandasFileSource):
         for f in local_files:
             if f.endswith(".shp"):
                 return f
-        raise ValueError(
+        else 
+            raise ValueError(
             f"No shapefile found in {filelist}, if you are using fsspec caching"
             " consider using same_names=True"
         )
