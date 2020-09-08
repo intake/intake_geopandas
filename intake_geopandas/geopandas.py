@@ -149,6 +149,27 @@ class ShapefileSource(GeoPandasFileSource):
         )
 
 
+class GeoParquetSource(GeoPandasFileSource):
+    name = "geoparquet"
+
+    def _open_dataset(self):
+        """
+        Open dataset using geopandas.
+        """
+        if self._use_fsspec:
+            with fsspec.open_files(self.urlpath, **self._storage_options) as f:
+                f = self._resolve_single_file(f) if len(f) > 1 else f[0]
+                self._dataframe = geopandas.read_parquet(
+                    f,
+                    **self._geopandas_kwargs,
+                )
+        else:
+            self._dataframe = geopandas.read_parquet(
+                self.urlpath,
+                **self._geopandas_kwargs
+            )
+
+
 class GeoPandasSQLSource(GeoPandasSource):
     def __init__(
         self, uri, sql_expr=None, table=None, geopandas_kwargs=None, metadata=None
