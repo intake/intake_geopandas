@@ -27,7 +27,9 @@ test:
   source_files:
     - tests
   requires:
+    - aiohttp
     - pytest
+    - requests
   commands:
     - py.test --verbose
 
