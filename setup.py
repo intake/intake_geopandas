@@ -21,6 +21,7 @@ setup(
     entry_points={
         'intake.drivers': [
             'geojson = intake_geopandas.geopandas:GeoJSONSource',
+            'geopandasfile = intake_geopandas.geopandas.GeoPandasFileSource',
             'geoparquet = intake_geopandas.geopandas:GeoParquetSource',
             'postgis = intake_geopandas.geopandas:PostGISSource',
             'shapefile = intake_geopandas.geopandas:ShapefileSource',
