@@ -4,7 +4,8 @@ import pytest
 
 from pkg_resources import get_distribution, parse_version
 
-from intake_geopandas import GeoJSONSource, ShapefileSource
+from intake_geopandas import GeoJSONSource, GeoPandasFileSource, GeoParquetSource, ShapefileSource
+from geopandas import GeoDataFrame
 
 geom_col_type = (
     "object"
@@ -31,6 +32,18 @@ def geojson_filenames():
 
 
 @pytest.fixture
+def gpkg_filename():
+    basedir = os.path.dirname(__file__)
+    return os.path.join(basedir, "data", "countries.gpkg")
+
+
+@pytest.fixture
+def geoparquet_filename():
+    basedir = os.path.dirname(__file__)
+    return os.path.join(basedir, "data", "countries.parquet")
+
+
+@pytest.fixture
 def geojson_datasource(geojson_filenames):
     return GeoJSONSource(geojson_filenames["countries"])
 
@@ -47,7 +60,7 @@ def test_shape_datasource(shape_datasource):
     }
 
 
-def test_countries_datasource(geojson_datasource):
+def test_geojson_datasource(geojson_datasource):
     info = geojson_datasource.discover()
     geojson_datasource.read()
     assert info["dtype"] == {
@@ -55,3 +68,18 @@ def test_countries_datasource(geojson_datasource):
         "id": "object",
         "name": "object",
     }
+
+
+def test_alternative_ogr_driver(gpkg_filename):
+    gpkg_datasource = GeoPandasFileSource(
+      gpkg_filename,
+      geopandas_kwargs={"driver": "GPKG"},
+    )
+    gdf = gpkg_datasource.read()
+    assert isinstance(gdf, GeoDataFrame)
+
+
+def test_geoparquet_source(geoparquet_filename):
+    datasource = GeoParquetSource(geoparquet_filename)
+    gdf = datasource.read()
+    assert isinstance(gdf, GeoDataFrame)
