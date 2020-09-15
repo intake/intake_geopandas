@@ -73,10 +73,10 @@ def test_regionmask_yaml():
     assert isinstance(meow_regions, regionmask.Regions), print(type(meow_regions))
 
 
-@pytest.mark.skipif(
-    not geopandas_version_allows_fsspec_caching,
-    reason='requires geopandas release after 0.8.0',
-)
+# @pytest.mark.skipif(
+#    not geopandas_version_allows_fsspec_caching,
+#    reason='requires geopandas release after 0.8.0',
+# )
 @pytest.mark.skipif(not regionmask_installed, reason='regionmask needs to be installed')
 def test_regionmask_yaml_cache():
     cat = intake.open_catalog('tests/data/shape.catalog.yaml')

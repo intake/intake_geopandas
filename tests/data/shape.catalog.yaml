@@ -33,9 +33,9 @@ sources:
       urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
       storage_options:
         simplecache:
-          same_names: true
+          same_names: True
           cache_storage: /tmp/intake_geopandas
-      use_fsspec: true
+      use_fsspec: True
       regionmask_kwargs:
         names: ECOREGION
         abbrevs: _from_name
@@ -49,10 +49,10 @@ sources:
     driver: intake_geopandas.geopandas.ShapefileSource
     args:
       urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
-      use_fsspec: true
+      use_fsspec: True
       storage_options:
         simplecache:
-          same_names: true
+          same_names: True
           cache_storage: /tmp/intake_geopandas
 
 
@@ -61,7 +61,8 @@ sources:
     driver: intake_geopandas.geopandas.ShapefileSource
     args:
       urlpath: simplecache::zip://gadm36_ALA_0*::https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_ALA_shp.zip
+      use_fsspec: True
       storage_options:
         simplecache:
-          same_names: true
+          same_names: True
           cache_storage: /tmp/intake_geopandas
