@@ -9,10 +9,39 @@ sources:
       urlpath: '{CATALOG_PATH}/stations/stations.shp'
 
   MEOW:
-      description: MEOW
-      driver: intake_geopandas.geopandas.ShapefileSource
-      args:
-        urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+    description: MEOW
+    driver: intake_geopandas.geopandas.ShapefileSource
+    args:
+      urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+
+  MEOW_regionmask:
+    description: MEOW for regionmask
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      regionmask_kwargs:
+        names: ECOREGION
+        abbrevs: _from_name
+        source: http://maps.tnc.org
+        numbers: ECO_CODE_X
+        name: MEOW
+
+  MEOW_regionmask_cache:
+    description: MEOW for regionmask and cache
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      storage_options:
+        simplecache:
+          same_names: true
+          cache_storage: /tmp/intake_geopandas
+      use_fsspec: true
+      regionmask_kwargs:
+        names: ECOREGION
+        abbrevs: _from_name
+        source: http://maps.tnc.org
+        numbers: ECO_CODE_X
+        name: MEOW
 
 
   MEOW_simplecache:

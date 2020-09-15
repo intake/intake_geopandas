@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+
 import versioneer
 
 requires = open('requirements.txt').read().strip().split('\n')
@@ -23,10 +24,12 @@ setup(
             'postgis = intake_geopandas.geopandas:PostGISSource',
             'shapefile = intake_geopandas.geopandas:ShapefileSource',
             'spatialite = intake_geopandas.geopandas:SpatiaLiteSource',
+            'regionmask = intake_geopandas.regionmask:RegionmaskSource',
         ]
     },
     include_package_data=True,
     install_requires=requires,
     long_description_content_type='text/markdown',
     long_description=open('README.md').read(),
-    zip_safe=False, )
+    zip_safe=False,
+)
