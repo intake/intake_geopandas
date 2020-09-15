@@ -8,7 +8,7 @@ from intake_geopandas import GeoJSONSource, ShapefileSource
 
 import geopandas
 
-geopandas_version_allows_fsspec_caching = int(geopandas.__version__[:5].replace('.','')) > 81 # checks geopandas larger than 0.8.0
+geopandas_version_allows_fsspec_caching = int(geopandas.__version__[:5].replace('.','')) > 80 # checks geopandas larger than 0.8.0
 
 def try_clean_cache(item):
     c = None
