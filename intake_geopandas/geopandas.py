@@ -103,7 +103,7 @@ class GeoPandasFileSource(GeoPandasSource):
         Open dataset using geopandas.
         """
         if self._use_fsspec:
-            with fsspec.open_files(self.urlpath, **self._storage_options) as f:
+            with fsspec.open_local(self.urlpath, **self._storage_options) as f:
                 f = self._resolve_single_file(f) if len(f) > 1 else f[0]
                 self._dataframe = geopandas.read_file(
                     f,
