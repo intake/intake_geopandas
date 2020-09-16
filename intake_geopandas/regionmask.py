@@ -65,7 +65,6 @@ class RegionmaskSource(GeoPandasFileSource):
         except ImportError:
             raise ValueError('regionmask must be installed')
         if self._dataframe is None:
-            print(self._storage_options)
             self._open_dataset()
             self._gdf = self._dataframe
             self._dataframe = regionmask.from_geopandas(
