@@ -50,7 +50,14 @@ class RegionmaskSource(GeoPandasFileSource):
         self.storage_options = storage_options or {}
         self._regionmask_kwargs = regionmask_kwargs or {}
 
-        super().__init__(urlpath=urlpath, metadata=metadata)
+        super().__init__(
+            urlpath=urlpath,
+            metadata=metadata,
+            use_fsspec=use_fsspec,
+            storage_options=storage_options,
+            geopandas_kwargs=geopandas_kwargs,
+            bbox=bbox,
+        )
 
     def _get_schema(self):
         try:
@@ -58,12 +65,14 @@ class RegionmaskSource(GeoPandasFileSource):
         except ImportError:
             raise ValueError('regionmask must be installed')
         if self._dataframe is None:
+            print(self._storage_options)
             self._open_dataset()
-            dtypes = self._dataframe.dtypes.to_dict()
+            self._gdf = self._dataframe
             self._dataframe = regionmask.from_geopandas(
                 self._dataframe, **self._regionmask_kwargs
             )
 
+        dtypes = self._gdf.dtypes.to_dict()
         dtypes = {n: str(t) for (n, t) in dtypes.items()}
         return Schema(
             datashape=None,

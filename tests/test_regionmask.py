@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 import geopandas
 import intake
 import pytest
@@ -75,11 +77,22 @@ def test_regionmask_yaml():
 
 @pytest.mark.skipif(
     not geopandas_version_allows_fsspec_caching,
-    reason='requires geopandas release after 0.8.0',
+    reason='requires geopandas release after 0.8.1',
 )
 @pytest.mark.skipif(not regionmask_installed, reason='regionmask needs to be installed')
 def test_regionmask_yaml_cache():
     cat = intake.open_catalog('tests/data/shape.catalog.yaml')
-    meow_regions = cat['MEOW_regionmask_cache'].read()
+    item = cat['MEOW_regionmask_cache']
+    meow_regions = item.read()
     assert isinstance(meow_regions, regionmask.Regions), print(type(meow_regions))
-    # from .test_remote_cache import try_clean_cache
+    expected_location = item.storage_options['simplecache']['cache_storage']
+    assert os.path.exists(expected_location)
+    from .test_remote_cache import try_clean_cache
+
+    try_clean_cache(item)
+    assert not os.path.exists(expected_location)
+    meow_regions = item.read()
+    assert isinstance(meow_regions, regionmask.Regions), print(type(meow_regions))
+    # needs new kernel to cache again
+    # assert os.path.exists(expected_location)
+    # try_clean_cache(item)

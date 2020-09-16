@@ -8,8 +8,8 @@ import pytest
 from intake_geopandas import GeoJSONSource, ShapefileSource
 
 geopandas_version_allows_fsspec_caching = (
-    int(geopandas.__version__[:5].replace('.', '')) > 80
-)  # checks geopandas larger than 0.8.0
+    int(geopandas.__version__[:5].replace('.', '')) > 81
+)  # checks geopandas larger than 0.8.1
 
 
 def try_clean_cache(item):
@@ -26,7 +26,7 @@ def try_clean_cache(item):
 
 @pytest.mark.skipif(
     not geopandas_version_allows_fsspec_caching,
-    reason='requires geopandas release after 0.8.0',
+    reason='requires geopandas release after 0.8.1',
 )
 @pytest.mark.parametrize(
     'url',
@@ -97,7 +97,7 @@ def GeoJSONSource_countries_remote():
 
 @pytest.mark.skipif(
     not geopandas_version_allows_fsspec_caching,
-    reason='requires geopandas release after 0.8.0',
+    reason='requires geopandas release after 0.8.1',
 )
 @pytest.mark.parametrize('same_names', [False, True])
 def test_remote_GeoJSONSource(GeoJSONSource_countries_remote, same_names):

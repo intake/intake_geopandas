@@ -31,11 +31,11 @@ sources:
     driver: intake_geopandas.regionmask.RegionmaskSource
     args:
       urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      use_fsspec: True
       storage_options:
         simplecache:
           same_names: True
-          cache_storage: /tmp/intake_geopandas
-      use_fsspec: True
+          cache_storage: tmp/intake_geopandas
       regionmask_kwargs:
         names: ECOREGION
         abbrevs: _from_name
