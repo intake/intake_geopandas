@@ -57,6 +57,8 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
+    name="geopandasfile"
+
     def __init__(
         self,
         urlpath,
@@ -67,6 +69,11 @@ class GeoPandasFileSource(GeoPandasSource):
         metadata=None,
     ):
         """
+        A source for a file opened by geopandas. Specializations of this are provided
+        for shapefiles and geojson, but this base class can also be used directly
+        for other file types by providing an OGR driver to `geopandas_kwargs`, e.g.
+        `geopandas_kwargs={"driver": "GPKG"}` to open a geopackage.
+
         Parameters
         ----------
         urlpath : str or iterable, location of data
