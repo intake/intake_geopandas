@@ -41,13 +41,6 @@ class RegionmaskSource(GeoPandasFileSource):
         regionmask_kwargs : dict
             Any further arguments to pass to regionmask.from_geopandas.
         """
-        self.urlpath = urlpath
-        self._use_fsspec = use_fsspec
-        self._storage_options = storage_options or {}
-        self._bbox = bbox
-        self._geopandas_kwargs = geopandas_kwargs or {}
-        self._dataframe = None
-        self.storage_options = storage_options or {}
         self._regionmask_kwargs = regionmask_kwargs or {}
 
         super().__init__(
