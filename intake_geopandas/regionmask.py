@@ -52,24 +52,27 @@ class RegionmaskSource(GeoPandasFileSource):
             bbox=bbox,
         )
 
-    def _get_schema(self):
+    def _open_dataset(self):
         try:
             import regionmask
         except ImportError:
-            raise ValueError('regionmask must be installed')
+            raise ImportError('regionmask must be installed')
+        super()._open_dataset()
+        self._dtypes = self._dataframe.dtypes.to_dict()
+        self._dtypes = {n: str(t) for (n, t) in self._dtypes.items()}
+        self._dataframe = regionmask.from_geopandas(
+            self._dataframe, **self._regionmask_kwargs
+        )
+
+    def _get_schema(self):
+
         if self._dataframe is None:
             self._open_dataset()
-            self._gdf = self._dataframe
-            self._dataframe = regionmask.from_geopandas(
-                self._dataframe, **self._regionmask_kwargs
-            )
 
-        dtypes = self._gdf.dtypes.to_dict()
-        dtypes = {n: str(t) for (n, t) in dtypes.items()}
         return Schema(
             datashape=None,
-            dtype=dtypes,
-            shape=(None, len(dtypes)),
+            dtype=self._dtypes,
+            shape=(None, len(self._dtypes)),
             npartitions=1,
             extra_metadata={},
         )

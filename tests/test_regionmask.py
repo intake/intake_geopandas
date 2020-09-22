@@ -93,6 +93,3 @@ def test_regionmask_yaml_cache():
     assert not os.path.exists(expected_location)
     meow_regions = item.read()
     assert isinstance(meow_regions, regionmask.Regions), print(type(meow_regions))
-    # needs new kernel to cache again
-    # assert os.path.exists(expected_location)
-    # try_clean_cache(item)
