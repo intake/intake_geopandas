@@ -5,7 +5,10 @@ import fsspec
 import geopandas
 from intake.source.base import DataSource, Schema
 
-# from . import __version__
+from ._version import get_versions
+
+__version__ = get_versions()['version']
+del get_versions
 
 
 class GeoPandasSource(DataSource, ABC):
@@ -13,7 +16,7 @@ class GeoPandasSource(DataSource, ABC):
     Base class intake source for loading GeoDataFrames.
     """
 
-    #    version = __version__
+    version = __version__
     container = 'dataframe'
     partition_access = True
 
