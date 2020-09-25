@@ -56,7 +56,7 @@ class RegionmaskSource(GeoPandasFileSource):
         try:
             import regionmask
         except ImportError:
-            raise ImportError('regionmask must be installed')
+            raise ImportError('please install regionmask')
         super()._open_dataset()
         self._dtypes = self._dataframe.dtypes.to_dict()
         self._dtypes = {n: str(t) for (n, t) in self._dtypes.items()}
