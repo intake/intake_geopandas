@@ -101,7 +101,6 @@ class GeoPandasFileSource(GeoPandasSource):
         self._bbox = bbox
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
-        self.storage_options = storage_options or {}
 
         super().__init__(metadata=metadata)
 
@@ -140,7 +139,7 @@ class ShapefileSource(GeoPandasFileSource):
         """
         Given a list of fsspec OpenFiles, find a .shp file.
         """
-        local_files = fsspec.open_local(self.urlpath, **self.storage_options)
+        local_files = fsspec.open_local(self.urlpath, **self._storage_options)
         for f in local_files:
             if f.endswith('.shp'):
                 return f
