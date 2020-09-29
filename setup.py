@@ -29,7 +29,7 @@ setup(
     },
     include_package_data=True,
     install_requires=requires,
-    extras_require=['regionmask'],
+    extras_require={'':['regionmask']},
     long_description_content_type='text/markdown',
     long_description=open('README.md').read(),
     zip_safe=False,
