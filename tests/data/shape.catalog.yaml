@@ -9,10 +9,39 @@ sources:
       urlpath: '{CATALOG_PATH}/stations/stations.shp'
 
   MEOW:
-      description: MEOW
-      driver: intake_geopandas.geopandas.ShapefileSource
-      args:
-        urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+    description: MEOW
+    driver: intake_geopandas.geopandas.ShapefileSource
+    args:
+      urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+
+  MEOW_regionmask:
+    description: MEOW for regionmask
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      regionmask_kwargs:
+        names: ECOREGION
+        abbrevs: _from_name
+        source: http://maps.tnc.org
+        numbers: ECO_CODE_X
+        name: MEOW
+
+  MEOW_regionmask_cache:
+    description: MEOW for regionmask and cache
+    driver: intake_geopandas.regionmask.RegionmaskSource
+    args:
+      urlpath: simplecache::http://maps.tnc.org/files/shp/MEOW-TNC.zip
+      use_fsspec: true
+      storage_options:
+        simplecache:
+          same_names: true
+          cache_storage: tmp/intake_geopandas
+      regionmask_kwargs:
+        names: ECOREGION
+        abbrevs: _from_name
+        source: http://maps.tnc.org
+        numbers: ECO_CODE_X
+        name: MEOW
 
 
   MEOW_simplecache:
@@ -32,6 +61,7 @@ sources:
     driver: intake_geopandas.geopandas.ShapefileSource
     args:
       urlpath: simplecache::zip://gadm36_ALA_0*::https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_ALA_shp.zip
+      use_fsspec: true
       storage_options:
         simplecache:
           same_names: true
