@@ -109,5 +109,6 @@ def test_remote_GeoJSONSource(GeoJSONSource_countries_remote, same_names):
     assert not os.path.exists(expected_location_on_disk)
     item.read()
     assert os.path.exists(expected_location_on_disk)
+    
     try_clean_cache(item)
     assert not os.path.exists(expected_location_on_disk)
