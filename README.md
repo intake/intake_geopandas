@@ -9,6 +9,7 @@ See [Intake docs](https://intake.readthedocs.io/en/latest/overview.html).
 In `intake_geopandas`, there are plugins provided for reading geospatial datasets into a geopandas dataframe.
 It currently supports reading from the following data sources:
   - GeoJSON files
+  - parquet files
   - PostGIS databases
   - ESRI Shapefiles
   - Spatialite databases
