@@ -83,3 +83,9 @@ def test_geoparquet_source(geoparquet_filename):
     datasource = GeoParquetSource(geoparquet_filename)
     gdf = datasource.read()
     assert isinstance(gdf, GeoDataFrame)
+
+
+def test_geoparquet_source_fsspec(geoparquet_filename):
+    datasource = GeoParquetSource(geoparquet_filename, use_fsspec=True)
+    gdf = datasource.read()
+    assert isinstance(gdf, GeoDataFrame)
