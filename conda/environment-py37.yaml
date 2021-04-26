@@ -12,3 +12,4 @@ dependencies:
   - pyarrow
   - requests
   - pytest
+  - pytest-cov

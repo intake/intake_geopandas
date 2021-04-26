@@ -24,7 +24,7 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
           activate-environment: test_env
-          environment-file: conda/environment-${{ matrix.CONDA_ENV }}.yml
+          environment-file: conda/environment-${{ matrix.CONDA_ENV }}.yaml
 
       - name: pip-install
         shell: bash -l {0}
