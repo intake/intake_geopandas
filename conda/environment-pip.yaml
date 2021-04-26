@@ -13,3 +13,4 @@ dependencies:
       - aiohttp
       - pyarrow
       - requests
+      - pytest
