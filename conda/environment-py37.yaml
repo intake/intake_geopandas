@@ -1,0 +1,14 @@
+name: intake-geopandas
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - intake>=0.2
+  - geopandas
+  - dask
+  - pandas
+  - aiohttp
+  - pyarrow
+  - requests
+  - pytest
