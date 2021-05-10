@@ -1,6 +1,6 @@
 # intake_geopandas
 
-[![Build Status](https://travis-ci.com/intake/intake_geopandas.svg?branch=master)](https://travis-ci.com/intake/intake_geopandas)
+[![Build Status](https://github.com/intake/intake_geopandas/actions/workflows/main.yaml/badge.svg)](https://github.com/intake/intake_geopandas/actions)
 
 intake_geopandas: [Geopandas](http://geopandas.org/) plugin for [Intake](https://github.com/intake/intake)
 
