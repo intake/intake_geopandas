@@ -11,7 +11,7 @@ dependencies:
       - dask
       - pandas
       - aiohttp
-      - pyarrow
+      - pyarrow>=5.0.0
       - requests
       - pytest
       - pytest-cov
