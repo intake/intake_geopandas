@@ -4,7 +4,12 @@ import pytest
 
 from pkg_resources import get_distribution, parse_version
 
-from intake_geopandas import GeoJSONSource, GeoPandasFileSource, GeoParquetSource, ShapefileSource
+from intake_geopandas import (
+    GeoJSONSource,
+    GeoPandasFileSource,
+    GeoParquetSource,
+    ShapefileSource,
+)
 from geopandas import GeoDataFrame
 
 geom_col_type = (
@@ -72,8 +77,8 @@ def test_geojson_datasource(geojson_datasource):
 
 def test_alternative_ogr_driver(gpkg_filename):
     gpkg_datasource = GeoPandasFileSource(
-      gpkg_filename,
-      geopandas_kwargs={"driver": "GPKG"},
+        gpkg_filename,
+        geopandas_kwargs={"driver": "GPKG"},
     )
     gdf = gpkg_datasource.read()
     assert isinstance(gdf, GeoDataFrame)
@@ -88,4 +93,12 @@ def test_geoparquet_source(geoparquet_filename):
 def test_geoparquet_source_fsspec(geoparquet_filename):
     datasource = GeoParquetSource(geoparquet_filename, use_fsspec=True)
     gdf = datasource.read()
+    assert isinstance(gdf, GeoDataFrame)
+
+
+@pytest.mark.parametrize("use_fsspec", [True, False])
+def test_geoparquet_to_dask(geoparquet_filename, use_fsspec):
+    datasource = GeoParquetSource(geoparquet_filename, use_fsspec=use_fsspec)
+    dgdf = datasource.to_dask()
+    gdf = dgdf.compute()
     assert isinstance(gdf, GeoDataFrame)

@@ -7,7 +7,7 @@ from intake.source.base import DataSource, Schema
 
 from ._version import get_versions
 
-__version__ = get_versions()['version']
+__version__ = get_versions()["version"]
 del get_versions
 
 
@@ -17,7 +17,7 @@ class GeoPandasSource(DataSource, ABC):
     """
 
     version = __version__
-    container = 'dataframe'
+    container = "dataframe"
     partition_access = True
 
     @abstractmethod
@@ -25,7 +25,7 @@ class GeoPandasSource(DataSource, ABC):
         """
         Open dataset using geopandas and use pattern fields to set new columns.
         """
-        raise NotImplementedError('GeoPandasSource is an abstract class')
+        raise NotImplementedError("GeoPandasSource is an abstract class")
 
     def _get_schema(self):
         if self._dataframe is None:
@@ -57,7 +57,7 @@ class GeoPandasSource(DataSource, ABC):
 
 
 class GeoPandasFileSource(GeoPandasSource):
-    name="geopandasfile"
+    name = "geopandasfile"
 
     def __init__(
         self,
@@ -119,7 +119,9 @@ class GeoPandasFileSource(GeoPandasSource):
             with fsspec.open_files(self.urlpath, **self.storage_options) as f:
                 f = self._resolve_single_file(f) if len(f) > 1 else f[0]
                 self._dataframe = geopandas.read_file(
-                    f, bbox=self._bbox, **self._geopandas_kwargs,
+                    f,
+                    bbox=self._bbox,
+                    **self._geopandas_kwargs,
                 )
         else:
             self._dataframe = geopandas.read_file(
@@ -131,16 +133,16 @@ class GeoPandasFileSource(GeoPandasSource):
         Given a list of fsspec OpenFiles, choose one to pass to geopandas.
         """
         raise NotImplementedError(
-            'Opening multiple files is not supported by this driver'
+            "Opening multiple files is not supported by this driver"
         )
 
 
 class GeoJSONSource(GeoPandasFileSource):
-    name = 'geojson'
+    name = "geojson"
 
 
 class ShapefileSource(GeoPandasFileSource):
-    name = 'shapefile'
+    name = "shapefile"
 
     def _resolve_single_file(self, filelist):
         """
@@ -148,16 +150,20 @@ class ShapefileSource(GeoPandasFileSource):
         """
         local_files = fsspec.open_local(self.urlpath, **self.storage_options)
         for f in local_files:
-            if f.endswith('.shp'):
+            if f.endswith(".shp"):
                 return f
         raise ValueError(
-            f'No shapefile found in {filelist}, if you are using fsspec caching'
-            ' consider using same_names=True'
+            f"No shapefile found in {filelist}, if you are using fsspec caching"
+            " consider using same_names=True"
         )
 
 
 class GeoParquetSource(GeoPandasFileSource):
     name = "geoparquet"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._df = None
 
     def _open_dataset(self):
         """
@@ -172,9 +178,44 @@ class GeoParquetSource(GeoPandasFileSource):
                 )
         else:
             self._dataframe = geopandas.read_parquet(
-                self.urlpath,
-                **self._geopandas_kwargs
+                self.urlpath, **self._geopandas_kwargs
             )
+
+    def _get_schema(self):
+        if self._df is None:
+            self._df = self._to_dask()
+        dtypes = {k: str(v) for k, v in self._df._meta.dtypes.items()}
+        self._schema = Schema(
+            datashape=None,
+            dtype=dtypes,
+            shape=(None, len(self._df.columns)),
+            npartitions=self._df.npartitions,
+            extra_metadata={},
+        )
+        return self._schema
+
+    def _load_metadata(self):
+        return super()._load_metadata()
+
+    def to_dask(self):
+        self._load_metadata()
+        return self._df
+
+    def read(self):
+        return self.to_dask().compute()
+
+    def _to_dask(self):
+        """
+        Create a lazy dask-geodataframe from the parquet data
+        """
+        import dask_geopandas
+
+        urlpath = self._get_cache(self.urlpath)[0]
+        self._df = dask_geopandas.read_parquet(
+            urlpath, storage_options=self.storage_options, **self._geopandas_kwargs
+        )
+        self._load_metadata()
+        return self._df
 
 
 class GeoPandasSQLSource(GeoPandasSource):
@@ -199,9 +240,9 @@ class GeoPandasSQLSource(GeoPandasSource):
         if sql_expr:
             self.sql_expr = sql_expr
         elif table:
-            self.sql_expr = f'SELECT * FROM {table}'
+            self.sql_expr = f"SELECT * FROM {table}"
         else:
-            raise ValueError('Must provide either a sql_expr or a table')
+            raise ValueError("Must provide either a sql_expr or a table")
 
         self._geopandas_kwargs = geopandas_kwargs or {}
         self._dataframe = None
@@ -215,8 +256,8 @@ class GeoPandasSQLSource(GeoPandasSource):
 
 
 class PostGISSource(GeoPandasSQLSource):
-    name = 'postgis'
+    name = "postgis"
 
 
 class SpatiaLiteSource(GeoPandasSQLSource):
-    name = 'spatialite'
+    name = "spatialite"
