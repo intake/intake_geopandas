@@ -194,9 +194,6 @@ class GeoParquetSource(GeoPandasFileSource):
         )
         return self._schema
 
-    def _load_metadata(self):
-        return super()._load_metadata()
-
     def to_dask(self):
         self._load_metadata()
         return self._df
@@ -206,7 +203,7 @@ class GeoParquetSource(GeoPandasFileSource):
 
     def _to_dask(self):
         """
-        Create a lazy dask-geodataframe from the parquet data
+        Create a lazy dask-geodataframe using dask-geopandas
         """
         import dask_geopandas
 
