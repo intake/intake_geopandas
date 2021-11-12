@@ -207,9 +207,8 @@ class GeoParquetSource(GeoPandasFileSource):
         """
         import dask_geopandas
 
-        urlpath = self._get_cache(self.urlpath)[0]
         self._df = dask_geopandas.read_parquet(
-            urlpath, storage_options=self.storage_options, **self._geopandas_kwargs
+            self.urlpath, storage_options=self.storage_options, **self._geopandas_kwargs
         )
         self._load_metadata()
         return self._df
